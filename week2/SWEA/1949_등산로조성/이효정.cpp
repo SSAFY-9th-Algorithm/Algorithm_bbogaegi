@@ -37,6 +37,8 @@ void dfs(Node start, int dist) {
 		else {
 			if (flag == 0) {
 				int dif = mat[ny][nx] - mat[start.y][start.x] + 1;
+				if (dif > K)
+					dif = K;
 				for (int i = 1; i <= dif; i++) {
 					flag = 1;
 					mat[ny][nx] -= i;
@@ -74,8 +76,8 @@ int main(void) {
 					MAX = mat[i][j];
 			}
 		}
+		maxDist = 0;
 		for (int i = 0; i < vec[MAX].size(); i++) {
-			maxDist = 0;
 			Node maxNode = vec[MAX][i];
 			memset(visited, 0, sizeof(visited));
 			visited[maxNode.y][maxNode.x] = 1;
