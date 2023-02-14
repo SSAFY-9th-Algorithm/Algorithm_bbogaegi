@@ -35,22 +35,22 @@ void dfs(Node start, int dist) {
 			visited[ny][nx] = 0;
 		}
 		else {
-			if (flag)
-				continue;
-			else {
+			if (flag == 0) {
 				int dif = mat[ny][nx] - mat[start.y][start.x] + 1;
-				if (dif > K)
-					continue;
-				flag = 1;
-				mat[ny][nx] -= dif;
-				visited[ny][nx] = 1;
-				dist++;
-				maxDist = max(dist, maxDist);
-				dfs({ ny, nx }, dist);
-				dist--;
-				flag = 0;
-				mat[ny][nx] += dif;
-				visited[ny][nx] = 0;
+				for (int i = 1; i <= dif; i++) {
+					flag = 1;
+					mat[ny][nx] -= i;
+					if (mat[ny][nx] < mat[start.y][start.x]) {
+						visited[ny][nx] = 1;
+						dist++;
+						maxDist = max(dist, maxDist);
+						dfs({ ny, nx }, dist);
+						dist--;
+						visited[ny][nx] = 0;
+					}
+					flag = 0;
+					mat[ny][nx] += i;
+				}
 			}
 		}
 	}
