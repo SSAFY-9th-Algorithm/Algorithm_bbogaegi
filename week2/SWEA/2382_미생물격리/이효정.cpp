@@ -10,14 +10,10 @@ struct Microbe {
 	int num;
 	int dir;
 };
-struct Pos {
-	int y;
-	int x;
-};
 
-int N, M, K; // ¼¿ °³¼ö, °Ý¸® ½Ã°£, ¹Ì»ý¹° ±ºÁý °³¼ö
+int N, M, K; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Ý¸ï¿½ ï¿½Ã°ï¿½, ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-int ydir[4] = { -1, 1, 0, 0 }; // »óÇÏÁÂ¿ì
+int ydir[4] = { -1, 1, 0, 0 }; // ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½
 int xdir[4] = { 0, 0, -1, 1 };
 
 Microbe microbe[1000];
@@ -31,27 +27,30 @@ void afterHour() {
 		if (nx < 0) nx = 0;
 		microbe[i].y = ny;
 		microbe[i].x = nx;
-		if ((ny == 0 || ny == N - 1) || (nx == 0 || nx == N - 1))
+		if ((ny == 0 || ny == N - 1) || (nx == 0 || nx == N - 1)) {
 			microbe[i].num /= 2;
-		if (microbe[i].dir % 2)
-			microbe[i].dir += 1;
-		else
-			microbe[i].dir -= 1;
+			if (microbe[i].dir % 2 == 0)
+				microbe[i].dir += 1;
+			else
+				microbe[i].dir -= 1;
+		}
 		if (microbe[i].num)
 			pos[microbe[i].y][microbe[i].x].push_back(i);
 	}
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
-			if (pos[i][j].size() < 1) {
+			if (pos[i][j].size() < 2) {
 				continue;
 			}
 			int maxMicro = pos[i][j][0];
 			int num = microbe[pos[i][j][0]].num;
+			int maxNum = num;
 			microbe[pos[i][j][0]].num = 0;
 			for (int z = 1; z < pos[i][j].size(); z++) {
 				num += microbe[pos[i][j][z]].num;
-				if (microbe[maxMicro].num < microbe[pos[i][j][z]].num) {
+				if (maxNum < microbe[pos[i][j][z]].num) {
 					maxMicro = pos[i][j][z];
+					maxNum = microbe[pos[i][j][z]].num;
 				}
 				microbe[pos[i][j][z]].num = 0;
 			}
