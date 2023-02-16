@@ -11,15 +11,16 @@ struct Microbe {
 	int dir;
 };
 
-int N, M, K; // �� ����, �ݸ� �ð�, �̻��� ���� ����
+int N, M, K; // 셀 개수, 격리 시간, 미생물 군집 개수
 
-int ydir[4] = { -1, 1, 0, 0 }; // �����¿�
+int ydir[4] = { -1, 1, 0, 0 }; // 상하좌우
 int xdir[4] = { 0, 0, -1, 1 };
 
 Microbe microbe[1000];
+vector<int> pos[100][100];
 
 void afterHour() {
-	vector<int> pos[100][100];
+	memset(pos, 0, sizeof(pos));
 	for (int i = 0; i < K; i++) {
 		int ny = microbe[i].y + ydir[microbe[i].dir];
 		int nx = microbe[i].x + xdir[microbe[i].dir];
@@ -37,22 +38,21 @@ void afterHour() {
 		if (microbe[i].num)
 			pos[microbe[i].y][microbe[i].x].push_back(i);
 	}
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			if (pos[i][j].size() < 2) {
-				continue;
-			}
-			int maxMicro = pos[i][j][0];
-			int num = microbe[pos[i][j][0]].num;
+	for (int i = 0; i < K; i++) {
+		int y = microbe[i].y;
+		int x = microbe[i].x;
+		if (pos[y][x].size() > 1) {
+			int maxMicro = pos[y][x][0];
+			int num = microbe[pos[y][x][0]].num;
 			int maxNum = num;
-			microbe[pos[i][j][0]].num = 0;
-			for (int z = 1; z < pos[i][j].size(); z++) {
-				num += microbe[pos[i][j][z]].num;
-				if (maxNum < microbe[pos[i][j][z]].num) {
-					maxMicro = pos[i][j][z];
-					maxNum = microbe[pos[i][j][z]].num;
+			microbe[pos[y][x][0]].num = 0;
+			for (int z = 1; z < pos[y][x].size(); z++) {
+				num += microbe[pos[y][x][z]].num;
+				if (maxNum < microbe[pos[y][x][z]].num) {
+					maxMicro = pos[y][x][z];
+					maxNum = microbe[pos[y][x][z]].num;
 				}
-				microbe[pos[i][j][z]].num = 0;
+				microbe[pos[y][x][z]].num = 0;
 			}
 			microbe[maxMicro].num = num;
 		}
