@@ -17,9 +17,10 @@ int ydir[4] = { -1, 1, 0, 0 }; // 상하좌우
 int xdir[4] = { 0, 0, -1, 1 };
 
 Microbe microbe[1000];
+vector<int> pos[100][100];
 
 void afterHour() {
-	vector<int> pos[100][100];
+	memset(pos, 0, sizeof(pos));
 	for (int i = 0; i < K; i++) {
 		int ny = microbe[i].y + ydir[microbe[i].dir];
 		int nx = microbe[i].x + xdir[microbe[i].dir];
