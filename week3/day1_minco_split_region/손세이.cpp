@@ -4,7 +4,7 @@
 #include <cstring>
 using namespace std;
 
-// 어려웠던 점
+// 잘못된 접근
 // 처음에 마을과 연결되었는지 확인할 때 간선의 개수가 마을보다 많을 수 있음을 간과해서 오답이 나옴...
 
 int N; // 마을의 개수
@@ -30,40 +30,29 @@ void INIT() {
 
 // 연결 여부 확인
 bool isConnected() {
-    if (path.size() > 1) {
-        int acnt = 0, bcnt = 0;
-        for (int i = 0; i < path.size() - 1; i++) {
-            for (int j = i + 1; j < path.size(); j++) {
-                int y = path[i];
-                int x = path[j];
-                if (MAP[y][x] == 1) acnt++;
-            }
-        }
-        for (int i = 1; i <= N - 1; i++) {
-            for (int j = i + 1; j <= N; j++) {
-                if (used[i] == 0 && used[j] == 0) {
-                    if (MAP[i][j] == 1) bcnt++;
-                }
-            }
-        }
-        if (acnt >= path.size() - 1 && bcnt >= N - path.size() - 1) return true;
-    }
-    else if(path.size() == 1){
-        int cnt = 0;
-        for (int i = 1; i <= N - 1; i++) {
-            for (int j = i + 1; j <= N; j++) {
-                if (used[i] == 0 && used[j] == 0) {
-                    if (MAP[i][j] == 1) cnt++;
-                }
-            }
-        }
-        if (cnt >= N - path.size() - 1) return true;
-    }
+	int acnt = 0, bcnt = 0;
+	for (int i = 0; i < path.size() - 1; i++) {
+		for (int j = i + 1; j < path.size(); j++) {
+			int y = path[i];
+			int x = path[j];
+			if (MAP[y][x] == 1) acnt++;
+		}
+	}
+	for (int i = 1; i <= N - 1; i++) {
+		for (int j = i + 1; j <= N; j++) {
+			if (used[i] == 0 && used[j] == 0) {
+				if (MAP[i][j] == 1) bcnt++;
+			}
+		}
+	}
+	if (path.size() > 1 && acnt >= path.size() - 1 && bcnt >= N - path.size() - 1) return true;
+	if (path.size() == 1 && bcnt >= N - path.size() - 1) return true;
+
     return false;
 }
 
 void dfs(int level) {
-    if (res == 0) 
+    if (res == 0)
         return;
 
     if (level == M) {
@@ -80,7 +69,7 @@ void dfs(int level) {
     for (int next = 1; next <= N; next++) {
         if (used[next] == 1)
             continue;
-        
+
         path.push_back(next);
         sum += P[next];
         used[next] = 1;
@@ -118,7 +107,7 @@ int main() {
         // output
         cout << '#' << tc << ' ';
         if (res == 21e8) cout << "0\n";
-        else cout<< res << '\n';
+        else cout << res << '\n';
     }
 
     return 0;
