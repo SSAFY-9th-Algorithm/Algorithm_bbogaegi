@@ -50,7 +50,7 @@ bool dfs_chk() {
 		bTotal += people[bVillage[i]];
 	}
 
-	if (bVillage.size() != 1 || aVillage.size() != 1)
+	if (bVillage.size() != 1 && aVillage.size() != 1)
 		for (int i = 0; i < N; i++)
 			if (!used[i])
 				return false;
