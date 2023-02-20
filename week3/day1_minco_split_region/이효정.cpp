@@ -30,30 +30,43 @@ bool dfs_chk() {
 	int used[8] = { 0, };
 	int aTotal = 0;
 	int bTotal = 0;
+	if (aVillage.size() == 1) {
+		used[aVillage[0]] = 1;
+		aTotal = people[aVillage[0]];
+	}
 	for (int i = 0; i < aVillage.size() - 1; i++) {
 		for (int j = i + 1; j < aVillage.size(); j++) {
 			if (mat[aVillage[i]][aVillage[j]]) {
+				if (!used[aVillage[i]])
+					aTotal += people[aVillage[i]];
+				if (!used[aVillage[j]])
+					aTotal += people[aVillage[j]];
 				used[aVillage[i]] = 1;
 				used[aVillage[j]] = 1;
 			}
 
 		}
-		aTotal += people[aVillage[i]];
+	}
+	if (bVillage.size() == 1) {
+		bTotal = people[bVillage[0]];
+		used[bVillage[0]] = 1;
 	}
 	for (int i = 0; i < bVillage.size() - 1; i++) {
 		for (int j = i + 1; j < bVillage.size(); j++) {
 			if (mat[bVillage[i]][bVillage[j]]) {
+				if (!used[bVillage[i]])
+					bTotal += people[bVillage[i]];
+				if (!used[bVillage[j]])
+					bTotal += people[bVillage[j]];
 				used[bVillage[i]] = 1;
 				used[bVillage[j]] = 1;
 			}
 		}
-		bTotal += people[bVillage[i]];
 	}
 
-	if (bVillage.size() != 1 && aVillage.size() != 1)
-		for (int i = 0; i < N; i++)
-			if (!used[i])
-				return false;
+	for (int i = 0; i < N; i++)
+		if (!used[i])
+			return false;
 	minDiff = min(minDiff, abs(aTotal - bTotal));
 	return true;
 }
@@ -71,6 +84,8 @@ void dfs(int level) {
 	path[level] = 0;
 	aVillage.pop_back();
 
+	if (level == 0)
+		return; // A이거나 B이거나 결과는 똑같을 것
 	bVillage.push_back(level);
 	path[level] = 'B';
 	dfs(level + 1);
