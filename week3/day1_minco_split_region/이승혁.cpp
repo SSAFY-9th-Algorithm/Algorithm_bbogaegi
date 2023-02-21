@@ -5,72 +5,115 @@
 #################미해결 문제########################
 #################미해결 문제########################
 
-## 1. 지역을 어떻게 나누지? ( 1/234, 12/34, 123/4, 13/24, 14/23, 2, 134, ... ) 
-## 2. 1, 234 -> for i=0;i<path.size()-1;i++, j=i+1; j<path.size(); j++ , MAP[i][j]!=0 break(연결 못한다는 뜻)
-
-아..풀고싶어라..
-
-
 #include <iostream>
 #include <vector>
+#include <cstring>
 using namespace std;
 
-int N;
-int visited[4];
-int parent[8];
-int nparent[8];
-vector<int>path;
+int MAP[8][8],w[8];
+int N,res,choice[8];
+int plused[8];
 
-// #1. 지역을 나눈다 -> 재귀를 통해 마을을 선택
-// 1-1 -> 4개의 경우 1000 1100 1110 1111 .... 이런식?
-// #2. 가능한지 확인한다 -> 연결 -> 나누어진 마을(1끼리, 0끼리) 이어질 수 있는지 확인한다.
-// #3. 가능하다면 마을의 합의 차를 구한다.
+void isValid() {
+	int A=0, B=0;
+	vector<int> Av;
+	vector<int> Bv;
 
+	memset(plused, 0, sizeof(plused));
+
+	for (int i = 0; i < N; i++) {
+		if (choice[i] == 1) Av.push_back(i);
+		else Bv.push_back(i);
+	}
+	if (Av.size() == 0 || Bv.size() == 0) return;
+	// A 마을 확인
+	if (Av.size() == 1) A += w[Av[0]];
+	else if(Av.size()>1)
+	{
+		for (int i = 0; i < Av.size() - 1; i++) {
+			for (int j = i + 1; j < Av.size(); j++) {
+				// 같은 지역구로 선택된 두 마을이 연결될 수 있다면
+				//cout << Av[i] << " " << Av[j] << '\n';
+				if (MAP[Av[i]][Av[j]] && MAP[Av[j]][Av[i]]) {
+					if (plused[Av[i]] == 0) {
+						plused[Av[i]] = 1;
+						A += w[Av[i]];
+					}
+					if (plused[Av[j]] == 0) {
+						plused[Av[j]] = 1;
+						A += w[Av[j]];
+					}
+				}
+
+			}
+		}
+	}
+
+	// B 마을 확인
+	if (Bv.size() == 1) B += w[Bv[0]];
+	else if (Bv.size()>1)
+	{
+		for (int i = 0; i < Bv.size() - 1; i++) {
+			for (int j = i + 1; j < Bv.size(); j++) {
+				// 같은 지역구로 선택된 두 마을이 연결될 수 있다면
+				if (MAP[Bv[i]][Bv[j]] && MAP[Bv[j]][Bv[i]]) {
+					if (plused[Bv[i]] == 0) {
+						plused[Bv[i]] = 1;
+						B += w[Bv[i]];
+					}
+					if (plused[Bv[j]] == 0) {
+						plused[Bv[j]] = 1;
+						B += w[Bv[j]];
+					}
+				}
+
+			}
+		}
+	}
+
+	
+	
+	cout << "A 마을 유권자 수 " << A << " B 마을 유권자 수 " << B << "\n";
+	res = min(res, abs(A - B));
+}
 
 void dfs(int level) {
-	if (level == N) {
-		for (int i = 0; i < path.size(); i++) {
-			cout << path[i] << " ";
-		}
-		cout << '\n';
+	if (level == N/2) {
+		isValid();
 		return;
 	}
 
 	for (int i = 0; i < N; i++) {
-		if (visited[i] == 1)continue;
-		if (path.size() > 1 && path[path.size() - 2] > i) continue;
-		path.push_back(i);
-		visited[i] = 1;
-		
+		if (choice[i] == 1) continue;
+		choice[i] = 1;
 		dfs(level + 1);
-
-		path.pop_back();
-		visited[i] = 0;
-
+		choice[i] = 0;
+		dfs(level + 1);
 	}
-
 }
-
 
 int main() {
-	N = 4;
-	int MAP[4][4] =
-	{ {0, 0, 1, 0,},
-	 {0, 0, 1, 0,},
-	 {1, 1, 0, 1,},
-	 {0, 0, 1, 0,} };
+	int T;
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		//reset
+		cin >> N;
+		res = 21e8;
+		memset(MAP, 0, sizeof(MAP));
+		memset(w, 0, sizeof(w));
+		memset(choice, 0, sizeof(choice));
 
-	 int w[4]={6, 7, 4, 8,};
+		//input
+		for (int i = 0; i < N; i++) for (int j = 0; j < N; j++)cin >> MAP[i][j];
+		for (int i = 0; i < N; i++)cin >> w[i];
 
-	 for (int i = 0; i < N; i++)parent[i] = i;
-
-	 for (int i = 0; i < N; i++) {
-		 for (int j = i + 1; j < N; j++) {
-			 if (MAP[i][j] == 1);
-			 parent[j] = i;
-		 }
-	 }
-
-	 dfs(0);
+		// solve
+		dfs(0);
+		// output
+		cout <<"#"<<tc<<" "<<res<<'\n';
+	}
+	
 
 }
+
+
