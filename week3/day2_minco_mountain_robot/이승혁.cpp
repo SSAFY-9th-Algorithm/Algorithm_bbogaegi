@@ -8,6 +8,7 @@
 // 너무쉬운 문제였다는걸 알고 화나서 자려고 함
 // 이제 최단경로 문제 다익스트라 최경다익스트라 ..최다익..
 
+// + ternel 이 아니고 tunnel 
 
 #include <iostream>
 #include <cstring>
