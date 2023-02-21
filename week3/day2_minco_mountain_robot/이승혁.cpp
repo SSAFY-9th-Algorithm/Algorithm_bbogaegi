@@ -1,111 +1,136 @@
+// 최단비용으로 A->B로 가는거는 다익스트라 알고리즘 사용이라는걸 까먹음
+// BFS로 허탕치다가 Dijkstra로 변경(노션참고 ㅎ)
+// 멘탈나가서 하다가 세이코드 참고했음
+// 너무쉬운 문제였다는걸 알고 화나서 자려고 함
+// 이제 최단경로 문제 다익스트라 최경다익스트라 ..최다익..
+
+
 #include <iostream>
 #include <cstring>
 #include <queue>
-
+#include <vector>
 using namespace std;
-int N, M,pee;
-int MAP[30][30];
 
+
+
+struct Ternel {
+	int ty, tx,cost;
+};
 struct Coord {
 	int y, x;
+	int cost;
 	bool operator < (Coord next) const {
-		if (MAP[y][x] < MAP[next.y][next.x])
-			return true;
-		if (MAP[y][x] > MAP[next.y][next.x])
+		if (cost < next.cost)
 			return false;
+		if (cost < next.cost)
+			return true;
 		return false;
 	}
 };
 
-struct Ternel {
-	int sy, sx;
-	int ey, ex;
-};
+vector<Ternel> ternel[31][31];
+int N, M, K[30], MAP[31][31], dist[31][31];
 
-Ternel ter[30];
-int visited[30][30];
-priority_queue<Coord> pq;
+// 초기화 함수
+void reset() {
+	memset(MAP, 0, sizeof(MAP));
+	memset(dist, 0, sizeof(dist));
+	memset(ternel, 0, sizeof(ternel));
+}
 
-void isTernel(int y, int x) {
-	// 현재위치가 터널인지 확인해보기
-	for (int t = 0; t < M; t++) {
-		if (y == ter[t].sy && x == ter[t].sx) {
-			visited[ter[t].ey][ter[t].ex] = visited[ter[t].sy][ter[t].sx] + pee;
-			return;
-
+// 입력 함수
+void input() {
+	cin >> N >> M;
+	// 맵 입력
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			cin >> MAP[i][j];
 		}
-		else if (y == ter[t].ey && x == ter[t].ex) {
-			visited[ter[t].sy][ter[t].sx] = visited[ter[t].ey][ter[t].ex] + pee;
-			return;
-		}
+	}
+	// 터널 입력
+	for (int i = 1; i <= M; i++) {
+		int sy, sx, ey, ex,cost;
+		cin >> sy >> sx >> ey >> ex>>cost;
+		ternel[sy][sx].push_back({ ey,ex,cost });
+		ternel[ey][ex].push_back({ sy,sx,cost });
 	}
 }
 
-
-void bfs(int Y,int X) {
-	pq.push({ Y, X});
+void dijkstra(int y, int x) {
+	priority_queue < Coord>pq;
+	pq.push({ y,x,0 });
 
 	int ydir[] = { -1,1,0,0 };
 	int xdir[] = { 0,0,-1,1 };
 
-	
-	visited[Y][X] = 0;
+	// 초기값 세팅
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			dist[i][j] = 21e8;
+		}
+	}
+	dist[y][x] = 0;
+
 
 	while (!pq.empty()) {
 		Coord now = pq.top();
 		pq.pop();
 
-		// 만약 현재위치가 터널이라면
-		// 터널 반대편을 넣는다.
-		isTernel(now.y, now.x);
+		if (now.cost > dist[now.y][now.x])continue;
 
+		// 터널인지 확인
+		if (ternel[now.y][now.x].size() != 0) {
+			for (int tt = 0; tt < ternel[now.y][now.x].size(); tt++) {
+				int ny = ternel[now.y][now.x][tt].ty;
+				int nx = ternel[now.y][now.x][tt].tx;
+				int nowcost = now.cost + ternel[now.y][now.x][tt].cost;
+				//cout << now.y << " , " << now.x << "번 터널에 들어왔다\n";
+				if (dist[ny][nx] > nowcost) {
+					dist[ny][nx] = nowcost;
+					//cout << ny << " , " << nx << "번 터널로 나왔다\n";
+					pq.push({ ny,nx,nowcost });
+				}
+			}
+		}
+
+		// 4방향 확인
 		for (int i = 0; i < 4; i++) {
 			int ny = now.y + ydir[i];
 			int nx = now.x + xdir[i];
-			if (ny < 1 || nx < 1 || ny > N || nx > N) continue;
-			if (ny == 1 && nx == 1)continue;
-			if (visited[ny][nx] !=-1)continue;
-			
-			if (MAP[ny][nx] > MAP[now.y][now.x]) 
-				visited[ny][nx] = visited[now.y][now.x] + abs(MAP[ny][nx] - MAP[now.y][now.x]) * 2;
-			if (MAP[ny][nx] == MAP[now.y][now.x])
-				visited[ny][nx] = visited[now.y][now.x] + 1;
-			if (MAP[ny][nx] < MAP[now.y][now.x]) visited[ny][nx] = visited[now.y][now.x];
-			pq.push({ ny,nx });
-;		}
-	}
+			int nowcost;
 
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= N; j++) {
-			cout << visited[i][j] << " ";
-		}cout << '\n';
+			if (ny < 1 || nx <1 || ny > N || nx > N) continue;
+			// 비용 정하기
+			if (MAP[now.y][now.x] == MAP[ny][nx])nowcost = now.cost+1;
+			else if (MAP[now.y][now.x] > MAP[ny][nx]) nowcost = now.cost;
+			else nowcost = now.cost + abs(MAP[now.y][now.x] - MAP[ny][nx]) * 2;
+
+			if (dist[ny][nx] <= nowcost) continue;
+			dist[ny][nx] = nowcost;
+			pq.push({ ny,nx,nowcost });
+
+		}
+
 	}
+	//for (int i = 1; i <= N; i++) {
+	//	for (int j = 1; j <= N; j++)
+	//		cout << dist[i][j] << ' ';
+	//	cout << '\n';
+	//}
 }
 
-
 int main() {
-	//reset
 
-	//input
-	cin >> N >> M;
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= N; j++) {
-			cin >> MAP[i][j];
-			visited[i][j] = -1;
-		}
+	int T;
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		// reset
+		reset();
+		// input
+		input();
+		// solve
+		dijkstra(1, 1);
+		// output
+		cout << "#" << tc << " " << dist[N][N] << '\n';
 	}
-
-	for (int i = 0; i < M; i++) {
-		Ternel now;
-		cin >> now.sy >> now.sx >> now.ey >> now.ex;
-		ter[i] = now;
-	}
-	cin >> pee;
-
-	//solve
-	bfs(1, 1);
-
-	//output
-
-
 }
