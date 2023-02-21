@@ -15,21 +15,27 @@ struct Node {
 	int cost;
 
 	bool operator<(Node next) const {
-		return cost < next.cost;
+		return cost > next.cost;
 	}
 };
 
 int N, M; // 지도 한 변의 길이, 터널 개수
 int mat[40][40];
 int dist[40][40];
-Node tunnel[40][40];
+vector<Node> tunnel[40][40];
 
 int ydir[] = { -1, 1, 0, 0 };
 int xdir[] = { 0, 0, -1, 1 };
 
+
 void reset() {
 	memset(mat, 0, sizeof(mat));
 	memset(dist, 0, sizeof(dist));
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			tunnel[i][j].clear();
+		}
+	}
 }
 
 void input() {
@@ -43,8 +49,8 @@ void input() {
 	for (int i = 0; i < M; i++) {
 		int ay, ax, by, bx, c;
 		cin >> ay >> ax >> by >> bx >> c;
-		tunnel[ay][ax] = { by, bx, c };
-		tunnel[by][bx] = { ay, ax, c };
+		tunnel[ay][ax].push_back({ by, bx, c });
+		tunnel[by][bx].push_back({ ay, ax, c });
 	}
 }
 
@@ -55,25 +61,37 @@ void dijkstra(int sy, int sx) {
 	while (!pq.empty()) {
 		Node now = pq.top();
 		pq.pop();
+		if (now.cost > dist[now.y][now.x])
+			continue;
 		for (int i = 0; i < 4; i++) {
 			int ny = now.y + ydir[i];
 			int nx = now.x + xdir[i];
 			if (ny < 1 || nx < 1 || ny > N || nx > N)
 				continue;
-			if (dist[ny][nx])
+			if (dist[ny][nx] != 21e8)
 				continue;
 			int diff = mat[ny][nx] - mat[now.y][now.x];
-//			if (diff < dist[ny][nx])
-			if (diff > 0)
-				dist[ny][nx] = dist[now.y][now.x] + (mat[ny][nx] - mat[now.y][now.x]) * 2;
-			else
-				dist[ny][nx] = dist[now.y][now.x];
+			if (diff < 0) {
+				diff = 0;
+			}
+			else if (diff == 0)
+				diff = 1;
+			else {
+				diff *= 2;
+			}
+			diff += dist[now.y][now.x];
+			if (dist[ny][nx] < diff)
+				continue;
+			dist[ny][nx] = diff;
 			pq.push({ ny, nx, dist[ny][nx] });
 		}
-		//
-		// if (tunnel[now.y][now.x].cost)/// 터널이 존재하면
-		//	if ({tunnel[now.y][now.x].y || })
-		//터널 이용 경우도 추가해줘야함
+		for (int i = 0; i < tunnel[now.y][now.x].size(); i++) {
+			Node next = tunnel[now.y][now.x][i];
+			if (next.cost + dist[now.y][now.x] > dist[next.y][next.x])
+				continue;
+			dist[next.y][next.x] = next.cost + dist[now.y][now.x];
+			pq.push({ next.y, next.x, dist[next.y][next.x] });
+		}
 	}
 }
 
@@ -88,6 +106,6 @@ int main(void) {
 		// solve
 		dijkstra(1, 1);
 		// output
-		cout << "#" << tc << " " << dist[N][N] << '\n';
+		cout << "#" << tc << " " << dist[N][N] - 1 << '\n';
 	}
 }
