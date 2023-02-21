@@ -30,6 +30,8 @@ bool dfs_chk() {
 	int used[8] = { 0, };
 	int aTotal = 0;
 	int bTotal = 0;
+	int aCnt = 0;
+	int bCnt = 0;
 	if (aVillage.size() == 1) {
 		used[aVillage[0]] = 1;
 		aTotal = people[aVillage[0]];
@@ -43,10 +45,13 @@ bool dfs_chk() {
 					aTotal += people[aVillage[j]];
 				used[aVillage[i]] = 1;
 				used[aVillage[j]] = 1;
+				aCnt++;
 			}
 
 		}
 	}
+	if (aCnt < aVillage.size() - 1)
+		return false;
 	if (bVillage.size() == 1) {
 		bTotal = people[bVillage[0]];
 		used[bVillage[0]] = 1;
@@ -60,10 +65,12 @@ bool dfs_chk() {
 					bTotal += people[bVillage[j]];
 				used[bVillage[i]] = 1;
 				used[bVillage[j]] = 1;
+				bCnt++;
 			}
 		}
 	}
-
+	if (bCnt < bVillage.size() - 1)
+		return false;
 	for (int i = 0; i < N; i++)
 		if (!used[i])
 			return false;
