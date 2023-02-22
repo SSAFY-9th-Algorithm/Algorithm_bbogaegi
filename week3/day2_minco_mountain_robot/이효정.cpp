@@ -7,6 +7,9 @@ using namespace std;
 /*
 dijkstra를 이용할 것
 - 4방향 + 터널
+터널을 반복문으로 확인할 때 시간초과 발생
+-> 터널에 대한 처리를 다시해줘야할 것 같다.
+-> 부분부분 오답도 
 */
 
 struct Node {
