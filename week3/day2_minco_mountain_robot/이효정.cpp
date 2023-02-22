@@ -14,7 +14,7 @@ dijkstra를 이용할 것
 dist는 최소값으로 갱신이 되어야하기 때문에 dist가 초기값이 아니라면 continue하는 부분은 없어야한다!
 visited != dist
 
-feat. 득화 교수님 & 내 깐부 
+feat. 득화 교수님 & 내 깐부 세이
 */
 
 struct Node {
