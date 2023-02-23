@@ -12,6 +12,18 @@ map을 2씩 크게 만들어서 그 라인이 채워졌으면
 여러 방법(DFS)이 있으면 전선 길이의 합이 최소!
 */
 
+/*
+1
+5
+1 1 1 1 1
+1 1 0 0 1
+0 0 0 1 1
+0 0 0 1 1
+1 0 1 1 1
+
+-> 6 
+*/
+
 struct Node {
 	int core;
 	int sum;
@@ -99,14 +111,22 @@ void dfs(int vIdx) {
 				continue;
 			for (int j = 1; j < N; j++) {
 				// left 확인
-				if (j < now.y){
+				if (i == 0 && j < now.y){
 					if (visited[2][j] && visited[2][j] >= now.x - 1) {
+						failFlag = 1;
+						break;
+					}
+					if (visited[3][j] && visited[3][j] >= N - now.x) {
 						failFlag = 1;
 						break;
 					}
 				} 
 				// right확인
-				else if (j > now.y) {
+				else if (i == 1 && j > now.y) {
+					if (visited[2][j] && visited[2][j] >= now.x - 1) {
+						failFlag = 1;
+						break;
+					}
 					if (visited[3][j] && visited[3][j] >= N - now.x) {
 						failFlag = 1;
 						break;
@@ -142,14 +162,22 @@ void dfs(int vIdx) {
 				continue;
 			for (int j = 1; j < N; j++) {
 				// left 확인
-				if (j < now.y) {
+				if (i == 2 && j < now.x) {
 					if (visited[0][j] && visited[0][j] >= now.y - 1) {
+						failFlag = 1;
+						break;
+					}
+					if (visited[1][j] && visited[1][j] >= N - now.y) {
 						failFlag = 1;
 						break;
 					}
 				}
 				// right확인
-				else if (j > now.y) {
+				else if (i == 3 && j > now.x) {
+					if (visited[0][j] && visited[0][j] >= now.y - 1) {
+						failFlag = 1;
+						break;
+					}
 					if (visited[1][j] && visited[1][j] >= N - now.y) {
 						failFlag = 1;
 						break;
