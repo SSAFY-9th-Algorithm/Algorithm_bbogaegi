@@ -15,7 +15,7 @@ int mat[8][8] = { 0, };
 int ydir[4] = { -1, 1, 0, 0 };
 int xdir[4] = { 0, 0, -1, 1 };
 int visited[8][8];
-int flag;
+int flag; // 등산로를 깎은 적이 있는가?
 int maxDist;
 
 void dfs(Node start, int dist) {
@@ -39,8 +39,8 @@ void dfs(Node start, int dist) {
 				int dif = mat[ny][nx] - mat[start.y][start.x] + 1;
 				if (dif > K)
 					dif = K;
-				for (int i = 1; i <= dif; i++) {
-					flag = 1;
+				for (int i = 1; i <= dif; i++) { // 깎을 수 있을만큼 깎아보기
+					flag = 1; // 한 곳만 깎을 수 있으니 flag 설정
 					mat[ny][nx] -= i;
 					if (mat[ny][nx] < mat[start.y][start.x]) {
 						visited[ny][nx] = 1;
@@ -50,7 +50,7 @@ void dfs(Node start, int dist) {
 						dist--;
 						visited[ny][nx] = 0;
 					}
-					flag = 0;
+					flag = 0; // 깎은 후 dfs 다 돌림 -> flag 원상복귀 다른 곳에서 깎아야할 수도 
 					mat[ny][nx] += i;
 				}
 			}
