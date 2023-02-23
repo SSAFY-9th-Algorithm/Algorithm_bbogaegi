@@ -64,11 +64,11 @@ void input() {
 				}
 				else if (1 == j) { // left
 					mat[i][0] = -1;
-					visited[2][N + 1] = -1;
+					visited[2][i] = -1;
 				}
 				else if (N == j) { // right
 					mat[i][N + 1] = -1;
-					visited[3][N + 1] = -1;
+					visited[3][i] = -1;
 				}
 				else {
 					cores.push_back({ i, j });
@@ -83,6 +83,8 @@ void input() {
 void dfs(int vIdx) {
 	int flag = 0;
 	if (vIdx == cores.size()) {
+		if (minSum.core > totalSum.core)
+			return;
 		if (minSum < totalSum)
 			minSum = totalSum;
 		return;
@@ -113,6 +115,8 @@ void dfs(int vIdx) {
 			}
 			if (failFlag)
 				continue;
+
+			// 만약 전선이 교차되는가?
 			for (int y = 1; i == 0 && y < now.y; y++) {
 				if (mat[y][now.x]) {
 					failFlag = 1;
@@ -121,18 +125,6 @@ void dfs(int vIdx) {
 			}
 			for (int y = now.y + 1; i == 1 && y <= N; y++) {
 				if (mat[y][now.x]) {
-					failFlag = 1;
-					break;
-				}
-			}
-			for (int x = 1; i == 2 && x < now.x; x++) {
-				if (mat[now.y][x]) {
-					failFlag = 1;
-					break;
-				}
-			}
-			for (int x = now.x + 1; i == 3 && x <= N; x++) {
-				if (mat[now.y][x]) {
 					failFlag = 1;
 					break;
 				}
@@ -162,6 +154,21 @@ void dfs(int vIdx) {
 						failFlag = 1;
 						break;
 					}
+				}
+			}
+			if (failFlag)
+				continue;
+
+			for (int x = 1; i == 2 && x < now.x; x++) {
+				if (mat[now.y][x]) {
+					failFlag = 1;
+					break;
+				}
+			}
+			for (int x = now.x + 1; i == 3 && x <= N; x++) {
+				if (mat[now.y][x]) {
+					failFlag = 1;
+					break;
 				}
 			}
 			if (failFlag)
