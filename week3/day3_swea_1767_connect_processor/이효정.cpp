@@ -10,9 +10,6 @@ map을 2씩 크게 만들어서 그 라인이 채워졌으면
 위쪽 아래쪽으로 채울 땐 가로로 연결된 곳이 있는지 확인해야 함.
 
 여러 방법(DFS)이 있으면 전선 길이의 합이 최소!
-
-우선 순위 -> 최대한 많은 Core에 전원 연결, 최소 길이
-priority_queue를 이용해보면 어떨까
 */
 
 struct Node {
@@ -61,7 +58,7 @@ void input() {
 					mat[0][j] = -1;
 					visited[0][j] = -1;
 				}
-				if (N == i) { // bottom
+				else if (N == i) { // bottom
 					mat[N + 1][j] = -1;
 					visited[1][j] = -1;
 				}
@@ -73,7 +70,11 @@ void input() {
 					mat[i][N + 1] = -1;
 					visited[3][N + 1] = -1;
 				}
-				cores.push_back({ i, j });
+				else {
+					cores.push_back({ i, j });
+					continue;
+				}
+				totalSum.core++;
 			}
 		}
 	}
@@ -88,10 +89,55 @@ void dfs(int vIdx) {
 	}
 	Pos now = cores[vIdx];
 	for (int i = 0; i < 4; i++) {
+		int failFlag = 0;
 		// top부터 봄
 		// bottom
 		if (i < 2) {
 			if (visited[i][now.x])
+				continue;
+			for (int j = 1; j < N; j++) {
+				// left 확인
+				if (j < now.y){
+					if (visited[2][j] && visited[2][j] >= now.x - 1) {
+						failFlag = 1;
+						break;
+					}
+				} 
+				// right확인
+				else if (j > now.y) {
+					if (visited[3][j] && visited[3][j] >= N - now.x) {
+						failFlag = 1;
+						break;
+					}
+				}
+			}
+			if (failFlag)
+				continue;
+			for (int y = 1; i == 0 && y < now.y; y++) {
+				if (mat[y][now.x]) {
+					failFlag = 1;
+					break;
+				}
+			}
+			for (int y = now.y + 1; i == 1 && y <= N; y++) {
+				if (mat[y][now.x]) {
+					failFlag = 1;
+					break;
+				}
+			}
+			for (int x = 1; i == 2 && x < now.x; x++) {
+				if (mat[now.y][x]) {
+					failFlag = 1;
+					break;
+				}
+			}
+			for (int x = now.x + 1; i == 3 && x <= N; x++) {
+				if (mat[now.y][x]) {
+					failFlag = 1;
+					break;
+				}
+			}
+			if (failFlag)
 				continue;
 			// i == 0일 땐 -1을 해줘야함
 			visited[i][now.x] = abs(i * N - now.y) - (int)(!i);
@@ -101,6 +147,24 @@ void dfs(int vIdx) {
 		}
 		else {
 			if (visited[i][now.y])
+				continue;
+			for (int j = 1; j < N; j++) {
+				// left 확인
+				if (j < now.y) {
+					if (visited[0][j] && visited[0][j] >= now.y - 1) {
+						failFlag = 1;
+						break;
+					}
+				}
+				// right확인
+				else if (j > now.y) {
+					if (visited[1][j] && visited[1][j] >= N - now.y) {
+						failFlag = 1;
+						break;
+					}
+				}
+			}
+			if (failFlag)
 				continue;
 			visited[i][now.y] = abs((i - 2) * N - now.x) - (int)(!(i - 2));
 			totalSum.sum += visited[i][now.y];
