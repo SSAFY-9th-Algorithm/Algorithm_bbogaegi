@@ -12,18 +12,6 @@ map을 2씩 크게 만들어서 그 라인이 채워졌으면
 여러 방법(DFS)이 있으면 전선 길이의 합이 최소!
 */
 
-/*
-1
-5
-1 1 1 1 1
-1 1 0 0 1
-0 0 0 1 1
-0 0 0 1 1
-1 0 1 1 1
-
--> 6 
-*/
-
 struct Node {
 	int core;
 	int sum;
@@ -52,6 +40,8 @@ int visited[4][15]; // 상하좌우
 vector<Pos> cores;
 Node minSum = { 0, 0 }; // core개수는 최대, 길이합은 최소
 Node totalSum = { 0, 0 };
+int ydir[] = { -1, 1, 0, 0 };
+int xdir[] = { 0, 0, -1, 1 };
 
 void reset() {
 	memset(mat, 0, sizeof(mat));
@@ -67,19 +57,15 @@ void input() {
 			cin >> mat[i][j];
 			if (mat[i][j]) {
 				if (1 == i) { // top
-					mat[0][j] = -1;
 					visited[0][j] = -1;
 				}
 				else if (N == i) { // bottom
-					mat[N + 1][j] = -1;
 					visited[1][j] = -1;
 				}
 				else if (1 == j) { // left
-					mat[i][0] = -1;
 					visited[2][i] = -1;
 				}
 				else if (N == j) { // right
-					mat[i][N + 1] = -1;
 					visited[3][i] = -1;
 				}
 				else {
@@ -94,7 +80,9 @@ void input() {
 
 void dfs(int vIdx) {
 	int flag = 0;
+	int cflag = 0;
 	if (vIdx == cores.size()) {
+		flag = 1;
 		if (minSum.core > totalSum.core)
 			return;
 		if (minSum < totalSum)
@@ -103,6 +91,12 @@ void dfs(int vIdx) {
 	}
 	Pos now = cores[vIdx];
 	for (int i = 0; i < 4; i++) {
+		int ny = now.y + ydir[i];
+		int nx = now.x + xdir[i];
+		if (ny < 1 || nx < 1 || ny >= N + 1 || nx >= N + 1)
+			continue;
+		if (mat[ny][nx])
+			continue;
 		int failFlag = 0;
 		// top부터 봄
 		// bottom
@@ -111,18 +105,8 @@ void dfs(int vIdx) {
 				continue;
 			for (int j = 1; j < N; j++) {
 				// left 확인
-				if (i == 0 && j < now.y){
-					if (visited[2][j] && visited[2][j] >= now.x - 1) {
-						failFlag = 1;
-						break;
-					}
-					if (visited[3][j] && visited[3][j] >= N - now.x) {
-						failFlag = 1;
-						break;
-					}
-				} 
-				// right확인
-				else if (i == 1 && j > now.y) {
+				if (i == 0 && j < now.y
+					|| i == 1 && j > now.y){
 					if (visited[2][j] && visited[2][j] >= now.x - 1) {
 						failFlag = 1;
 						break;
@@ -160,20 +144,10 @@ void dfs(int vIdx) {
 		else {
 			if (visited[i][now.y])
 				continue;
-			for (int j = 1; j < N; j++) {
+			for (int j = 1; j < N; j++
+				|| i == 3 && j > now.x) {
 				// left 확인
 				if (i == 2 && j < now.x) {
-					if (visited[0][j] && visited[0][j] >= now.y - 1) {
-						failFlag = 1;
-						break;
-					}
-					if (visited[1][j] && visited[1][j] >= N - now.y) {
-						failFlag = 1;
-						break;
-					}
-				}
-				// right확인
-				else if (i == 3 && j > now.x) {
 					if (visited[0][j] && visited[0][j] >= now.y - 1) {
 						failFlag = 1;
 						break;
@@ -206,6 +180,7 @@ void dfs(int vIdx) {
 			totalSum.core++;
 			flag = 2;
 		}
+		cflag = 1;
 		dfs(vIdx + 1);
 		if (flag) {
 			totalSum.core--;
@@ -219,6 +194,8 @@ void dfs(int vIdx) {
 			}
 		}
 	}
+	if (!cflag)
+		dfs(vIdx + 1);
 }
 
 
