@@ -1,5 +1,12 @@
-// 가장 적게걸리는 -> 모든 경우 + 최소값
-// ===> 가지치기
+// 6시간?ㅋㅋ
+
+// pq로 1계단 적게걸리는, 2계단 적게걸리는 순서로 정렬해서
+// 하나씩 뽑아서 확인하려했는데
+// 안되는 경우가 너무 많음(모든 조건을 확인해봐야함)
+
+// dfs를 떠올렸어야 했는데 또 떠올리지 못했다.
+
+// 하
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -23,15 +30,14 @@ bool cmps1(person left, person right) {
 			return false;
 		return false;
 };
-struct cmps2 {
-	bool operator () (person left, person right) {
-		if (left.s2t < right.s2t)
-			return false;
-		if (left.s2t > right.s2t)
-			return true;
+bool cmps2(person left, person right) {
+	if (left.s2t < right.s2t)
+		return true;
+	if (left.s2t > right.s2t)
 		return false;
-	}
+	return false;
 };
+
 
 coord stair[2];
 person people[10];
@@ -109,37 +115,46 @@ void steps() {
 			}
 		}
 	};
-	int st2_cnt = 0;
+
+	// 1번 계단에 선택된 녀석들
+	vector<person> s2;
 
 	for (int i = 0; i < p_cnt; i++) {
 		if (finish[i] == 1)continue;
-		if (st2_cnt < 3) {
-			st2ing.push_back(i);
-			canEnter2 = max(canEnter2,people[i].s2t);
+		s2.push_back(people[i]);
+	}
+
+	sort(s2.begin(), s2.end(),cmps2);
+
+	for (int i = 0; i < s2.size(); i++) {
+		person now = s2[i];
+		if (i < 3) {
+			st2ing.push_back(now.num);
+			canEnter2 = max(canEnter2,now.s2t);
 		}
 		else {
 			// 들어갈 수 없는 상황
-			int check = st2ing[st2_cnt - 3];
-			if (people[i].s2t - people[check].s2t < stair[1].t) {
+			int check = st2ing[i - 3];
+			if (now.s2t - people[check].s2t < stair[1].t) {
 				canEnter2 = max(canEnter2, people[check].s2t + stair[1].t);
-				st2ing.push_back(i);
+				st2ing.push_back(now.num);
 			}
 			// 들어갈 수 있다
 			else
 			{
-				canEnter2 = max(canEnter2, people[i].s2t);
-				st2ing.push_back(i);
+				canEnter2 = max(canEnter2, now.s2t);
+				st2ing.push_back(now.num);
 			}
 		}
 	}
-	cout << "\n 1번 계단 이용자 : ";
-	for (int i = 0; i < st1ing.size(); i++) {
-		cout << st1ing[i] << " ";
-	}cout << "\n 2번 계단 이용자 : ";
-	for (int i = 0; i < st2ing.size(); i++) {
-		cout << st2ing[i] << " ";
-	}cout << '\n';
-	cout << canEnter1 << " " << canEnter2 << '\n';
+	//cout << "\n 1번 계단 이용자 : ";
+	//for (int i = 0; i < st1ing.size(); i++) {
+	//	cout << st1ing[i] << " ";
+	//}cout << "\n 2번 계단 이용자 : ";
+	//for (int i = 0; i < st2ing.size(); i++) {
+	//	cout << st2ing[i] << " ";
+	//}cout << '\n';
+	//cout << canEnter1 << " " << canEnter2 << '\n';
 
 	int MIN;
 	if (canEnter1 != -21e8 && canEnter2 != -21e8)
@@ -170,7 +185,7 @@ void dfs(int level) {
 }
 
 int main() {
-	//freopen("input.txt", "r", stdin);
+	freopen("input.txt", "r", stdin);
 	int T;
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
@@ -184,3 +199,25 @@ int main() {
 	}
 }
 
+
+/*
+* 
+5
+0 1 1 0 0
+0 0 1 0 3
+0 1 0 1 0
+0 0 0 0 0
+1 0 5 0 0
+
+9
+0 0 0 1 0 0 0 0 0
+0 1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 8
+7 0 0 0 0 1 0 0 0
+0 0 0 0 0 1 1 0 0
+0 0 0 0 0 0 0 0 0
+1 0 0 0 0 1 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+
+*/
