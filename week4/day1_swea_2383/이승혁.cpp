@@ -157,12 +157,30 @@ void goStairs() {
 
 		if (stair[0].t > stair[1].t)
 		{
-			steps(0);
-			steps(1);
+			if (idx1 < 3) {
+				for (int t = 0; t < 3; t++)
+					steps(0);
+				for (int t = 0; t < 3; t++)
+					steps(1);
+			}
+			else
+			{
+				steps(0);
+				steps(1);
+			}
 		}
 		else {
-			steps(1);
-			steps(0);
+			if (idx2 < 3) {
+				for (int t = 0; t < 3; t++)
+					steps(1);
+				for (int t = 0; t < 3; t++)
+					steps(0);
+			}
+			else
+			{
+				steps(1);
+				steps(0);
+			}
 		}
 	}
 		
@@ -181,3 +199,19 @@ int main() {
 		
 	}
 }
+
+
+/*
+10
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 1 0 0 0 0 0
+0 0 1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+3 0 1 0 1 0 0 0 0 2
+1 1 0 0 1 0 1 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+
+*/
