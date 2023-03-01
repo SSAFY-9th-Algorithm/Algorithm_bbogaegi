@@ -5,7 +5,7 @@ using namespace std;
 
 // 도저히 안되겠어서 옆반 승욱이한테 SOS 보냄...
 // 두가지 방법을 제시해줌
-// 1. dijkstra -> 풀어보고 올릴예정
+// 1. dijkstra -> 원래 시도하던 방법이라 풀어보고 올릴예정
 // 2. parametic search -> 현재 코드
 
 int N, M;
@@ -51,8 +51,7 @@ bool bfs(int limit) {
 				q.push({ ny, nx });
 			}
 		}
-		if (MAP[now.first][now.second] == 0)
-			continue;
+
 		for (int i = 2; i < 4; i++) {
 			int ny = now.first + ydir[i];
 			int nx = now.second + xdir[i];
