@@ -10,6 +10,9 @@ map을 2씩 크게 만들어서 그 라인이 채워졌으면
 위쪽 아래쪽으로 채울 땐 가로로 연결된 곳이 있는지 확인해야 함.
 
 여러 방법(DFS)이 있으면 전선 길이의 합이 최소!
+
+우선 순위 -> 최대한 많은 Core에 전원 연결, 최소 길이
+priority_queue를 이용해보면 어떨까
 */
 
 struct Node {
@@ -78,9 +81,9 @@ void input() {
 	}
 }
 
+int allFlag = 0;
 void dfs(int vIdx) {
 	int flag = 0;
-	int cflag = 0;
 	if (vIdx == cores.size()) {
 		flag = 1;
 		if (minSum.core > totalSum.core)
@@ -180,7 +183,6 @@ void dfs(int vIdx) {
 			totalSum.core++;
 			flag = 2;
 		}
-		cflag = 1;
 		dfs(vIdx + 1);
 		if (flag) {
 			totalSum.core--;
@@ -194,7 +196,7 @@ void dfs(int vIdx) {
 			}
 		}
 	}
-	if (!cflag)
+	if (!allFlag)
 		dfs(vIdx + 1);
 }
 
