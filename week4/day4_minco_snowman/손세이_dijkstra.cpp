@@ -58,7 +58,7 @@ void dijkstra() {
 					if (MAP[ny][nx] == 0) // 땅아니면 안감
 						continue;
 
-					int ncost = max(now.cost * (-1), j);
+					int ncost = max(now.cost * (-1), j); // 현재 여기까지 오는데 필요한 MAX장Limit 저장
 
 					if (dist[ny][nx] <= ncost)
 						continue;
