@@ -4,6 +4,7 @@
 using namespace std;
 
 // dijkstra -> 현재 코드
+//
 
 struct Node {
 	int y;
@@ -43,7 +44,7 @@ void dijkstra() {
 		Node now = pq.top();
 		pq.pop();
 
-		if (now.cost * (-1) > dist[now.y][now.x])
+		if (-now.cost > dist[now.y][now.x])
 			continue;
 
 		for (int i = 0; i < 4; i++) {
@@ -58,13 +59,13 @@ void dijkstra() {
 					if (MAP[ny][nx] == 0) // 땅아니면 안감
 						continue;
 
-					int ncost = max(now.cost * (-1), j); // 현재 여기까지 오는데 필요한 MAX장Limit 저장
+					int ncost = max(-now.cost, j);
 
 					if (dist[ny][nx] <= ncost)
 						continue;
 
 					dist[ny][nx] = ncost;
-					pq.push({ ny, nx, ncost*(-1)});
+					pq.push({ ny, nx, -ncost });
 				}
 			}
 			if (i == 2 || i == 3) {
@@ -76,11 +77,11 @@ void dijkstra() {
 				if (MAP[ny][nx] == 0) // 땅아니면 못감
 					continue;
 
-				
-				if (dist[ny][nx] <= now.cost*(-1))
+
+				if (dist[ny][nx] <= -now.cost)
 					continue;
 
-				dist[ny][nx] = now.cost * (-1);
+				dist[ny][nx] = -now.cost;
 				pq.push({ ny, nx, now.cost });
 			}
 		}
