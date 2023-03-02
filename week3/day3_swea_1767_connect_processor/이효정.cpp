@@ -147,10 +147,10 @@ void dfs(int vIdx) {
 		else {
 			if (visited[i][now.y])
 				continue;
-			for (int j = 1; j < N; j++
-				|| i == 3 && j > now.x) {
+			for (int j = 1; j < N; j++) {
 				// left 확인
-				if (i == 2 && j < now.x) {
+				if (i == 2 && j < now.x
+				    || i == 3 && j > now.x) {
 					if (visited[0][j] && visited[0][j] >= now.y - 1) {
 						failFlag = 1;
 						break;
