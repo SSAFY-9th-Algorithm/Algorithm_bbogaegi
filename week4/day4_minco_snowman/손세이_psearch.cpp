@@ -3,9 +3,8 @@
 #include <algorithm>
 using namespace std;
 
-// 도저히 안되겠어서 옆반 승욱이한테 SOS 보냄...
-// 두가지 방법을 제시해줌
-// 1. dijkstra -> 원래 시도하던 방법이라 풀어보고 올릴예정
+// 옆반 승욱이한테 물어봤더니 두가지 방법을 줌
+// 1. dijkstra -> 올림
 // 2. parametic search -> 현재 코드
 
 int N, M;
@@ -55,7 +54,7 @@ bool bfs(int limit) {
 		for (int i = 2; i < 4; i++) {
 			int ny = now.first + ydir[i];
 			int nx = now.second + xdir[i];
-	
+
 			if (outRange(ny, nx))
 				continue;
 			if (visited[ny][nx])
@@ -73,7 +72,7 @@ bool bfs(int limit) {
 
 void psearch() {
 	int left = 0;
-	int right = N - 1;
+	int right = abs(sy-dy);
 
 	while (left <= right)
 	{
