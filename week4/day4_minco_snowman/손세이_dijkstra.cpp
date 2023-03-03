@@ -59,7 +59,7 @@ void dijkstra() {
 					if (MAP[ny][nx] == 0) // 땅아니면 안감
 						continue;
 
-					int ncost = max(-now.cost, j);
+					int ncost = max(-now.cost, j); // 올라간 값중 가장 큰 limit을 저장하여 가져간다!
 
 					if (dist[ny][nx] <= ncost)
 						continue;
@@ -68,6 +68,7 @@ void dijkstra() {
 					pq.push({ ny, nx, -ncost });
 				}
 			}
+			// 좌우 이동
 			if (i == 2 || i == 3) {
 				int ny = now.y + ydir[i];
 				int nx = now.x + xdir[i];
@@ -77,10 +78,10 @@ void dijkstra() {
 				if (MAP[ny][nx] == 0) // 땅아니면 못감
 					continue;
 
-
+				
 				if (dist[ny][nx] <= -now.cost)
 					continue;
-
+				
 				dist[ny][nx] = -now.cost;
 				pq.push({ ny, nx, now.cost });
 			}
