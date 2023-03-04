@@ -7,18 +7,18 @@ using namespace std;
 int parent[11];
 int N;
 int pp[11]; // 유권자 수
-//int MAP[11][11]; // 마을의 연결 정보 저장
-vector<int> al[11]; // 마을의 연결 정보 저장
+int MAP[11][11]; // 마을의 연결 정보 저장
+//vector<int> al[11]; // 마을의 연결 정보 저장
 int M; // 몇개로 선거구를 구성할 것인가
 int ans;
 int visited[11];
 
 void INIT() {
 	memset(pp, 0, sizeof(pp));
-	//memset(MAP, 0, sizeof(MAP));
+	memset(MAP, 0, sizeof(MAP));
 	memset(visited, 0, sizeof(visited));
 	memset(parent, 0, sizeof(parent));
-	memset(al, 0, sizeof(al));
+	//memset(al, 0, sizeof(al));
 	ans = 21e8;
 }
 
@@ -26,10 +26,10 @@ void input() {
 	cin >> N;
 	for (int i = 1; i <= N; i++) {
 		for (int j = 1; j <= N; j++) {
-			int num;
-			cin >> num;
-			if (num) 
-				al[i].push_back(j);
+			//int num;
+			cin >> MAP[i][j];
+			/*if (num) 
+				al[i].push_back(j);*/
 		}
 	}
 	for (int i = 1; i <= N; i++)
@@ -66,11 +66,21 @@ bool isConnected(vector<int>& v) {
 		int now = q.front();
 		q.pop();
 		// 실제 연결 되어있는 마을을 방문!
-		for (int i = 0; i < al[now].size(); i++) {
+		/*for (int i = 0; i < al[now].size(); i++) {
 			int next = al[now][i];
 			if (used[next])
 				continue;
 			if (Find(next) != Find(now))
+				continue;
+			used[next] = 1;
+			q.push(next);
+		}*/
+		for (int next = 1; next <= N; next++) {
+			if (used[next])
+				continue;
+			if (MAP[now][next] == 0)
+				continue;
+			if (Find(now) != Find(next))
 				continue;
 			used[next] = 1;
 			q.push(next);
