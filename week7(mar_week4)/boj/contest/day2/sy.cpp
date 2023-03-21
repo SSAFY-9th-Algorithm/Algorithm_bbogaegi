@@ -95,8 +95,8 @@ int main() {
 			}
 		}
 	}
-	int type = cctv.size();
-	for (int i = type - 1; i >= 0; i--) { 
+
+	for (int i = cctv.size() - 1; i >= 0; i--) {
 		int y = cctv[i].first; 
 		int x = cctv[i].second;
 		// 5번 타입은 4방향 다보는 경우 1가지
