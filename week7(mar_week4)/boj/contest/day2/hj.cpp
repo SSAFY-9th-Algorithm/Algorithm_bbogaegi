@@ -14,63 +14,68 @@ struct CCTV {
 };
 
 int N, M;
-int ydir[] = { -1, 1, 0, 0 };
-int xdir[] = { 0, 0, -1, 1 };
+int ydir[] = { -1, 0, 1, 0 };
+int xdir[] = { 0, -1, 0, 1 };
 int visited[10][10];
 int mat[10][10];
 vector<Node> cctv5;
 CCTV cctv[8];
-int ccnum = 0;
+int ccnum = 0; // 5번 CCTV 제외한 CCTV 개수
 int minCnt = 21e8;
 
-int getCount() {
-	int cnt = 0;
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= M; j++)
-			if (visited[i][j])
-				cnt++;
+int check(CCTV now, int dir) {
+	int tCnt = 0;
+	int ny = now.y + ydir[dir];
+	int nx = now.x + xdir[dir];
+	while (mat[ny][nx] != 6) {
+		if (visited[ny][nx] == 0) {
+			tCnt++;
+			visited[ny][nx] = 1;
+		}
+		ny += ydir[dir];
+		nx += xdir[dir];
 	}
-	return N * M - cnt;
+	return tCnt;
 }
 
-void dfs(int now) {
-	if (ccnum == now) {
-		int temp = getCount();
-		if (minCnt > temp)
-			minCnt = temp;
+void dfs(int level, int cnt) {
+	if (level == ccnum) {
+		int rCnt = N * M - cnt;
+		if (minCnt > rCnt)
+			minCnt = rCnt;
 		return;
 	}
+	int tempCnt = 0;
 	int origin[10][10];
 	memcpy(origin, visited, sizeof(visited));
-	CCTV cnow = cctv[now];
-	int num = 0;
+	CCTV now = cctv[level];
 	for (int i = 0; i < 4; i++) {
-		num++;
-		int ny = cnow.y + ydir[i];
-		int nx = cnow.x + xdir[i];
-		while (mat[ny][nx] != 6) {
-			visited[ny][nx] = 1;
-			ny += ydir[i];
-			nx += xdir[i];
+		tempCnt = check(now, i);
+		if (now.num == 2) {
+			if (i > 1)
+				tempCnt += check(now, i - 2);
+			else
+				tempCnt += check(now, i + 2);
 		}
-		if (cnow.num == 2 && i % 2 == 0)
-			continue;
-		if (cnow.num == 4 && num < 3)
-			continue;
-		if (cnow.num == 3 && num < 2) {
-			i++;
-			continue;
+		else if (now.num == 3) {
+			tempCnt += check(now, (i + 1) % 4);
 		}
-		dfs(now + 1);
-		if (cnow.num == 4 || cnow.num == 3) {
-			num = 0;
-			i = (i + 2) % 4;
+		else if (now.num == 4) {
+			tempCnt += check(now, (i + 1) % 4);
+			tempCnt += check(now, (i + 2) % 4);
 		}
+		// 이게 있으면 기저조건까지 못가고 끝나는 경우가 생김
+		// tc 4
+		//if (tempCnt == 0)
+		//	continue;
+		dfs(level + 1, cnt + tempCnt);
+		tempCnt = 0;
 		memcpy(visited, origin, sizeof(origin));
 	}
 }
 
 int main(void) {
+	int cnt = 0;
 	cin >> N >> M;
 	memset(mat[0], 0, sizeof(mat[0]));
 	memset(mat[N + 1], 0, sizeof(mat[N + 1]));
@@ -83,6 +88,8 @@ int main(void) {
 			else {
 				cin >> mat[i][j];
 				if (mat[i][j]) {
+					if (visited[i][j] == 0)
+						cnt++;
 					visited[i][j] = 1;
 					if (mat[i][j] == 5)
 						cctv5.push_back({ i, j });
@@ -98,6 +105,8 @@ int main(void) {
 			int ny = now.y + ydir[d];
 			int nx = now.x + xdir[d];
 			while (mat[ny][nx] != 6) {
+				if (visited[ny][nx] == 0)
+					cnt++;
 				visited[ny][nx] = 1;
 				ny += ydir[d];
 				nx += xdir[d];
@@ -105,10 +114,10 @@ int main(void) {
 		}
 	}
 	if (ccnum > 0) {
-		dfs(0);
+		dfs(0, cnt);
 		cout << minCnt;
 	}
 	else {
-		cout << getCount();
+		cout << N * M - cnt;
 	}
 }
