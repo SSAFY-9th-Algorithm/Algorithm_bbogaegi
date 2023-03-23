@@ -4,13 +4,13 @@ using namespace std;
 struct coord { int y, x; };
 vector<coord>v;
 
-int MAP[200][200], N, cnt = 0;
+int MAP[101][101], N, cnt = 0;
 int y, x, d, g;
 int basey, basex;
 int ydir[] = { 0,-1,0,1 };
 int xdir[] = { 1,0,-1,0 };
 
-int checky[] = { 0,-1,-1};
+int checky[] = { 0,1,1};
 int checkx[] = { 1,0,1 };
 
 
@@ -37,22 +37,25 @@ int main() {
 	{
 		cin >> x >> y >> d >> g;
 		v.clear();
-		x += 100; y += 100;
 		MAP[y][x] = 1;
 		MAP[y + ydir[d]][x + xdir[d]] = 1;
 		v.push_back({ y, x });
 		v.push_back({ y+ydir[d],x+xdir[d]});
-		for (int i = 0; i < g; i++) solution();
+		if(g) for (int i = 0; i < g; i++) solution();
 	}
 
-	for (int i = 0; i < 200; i++) {
-		for (int j = 0; j < 200; j++) {
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 100; j++) {
 			if (MAP[i][j] == 1) {
 				int flag = 0;
 				for (int k = 0; k < 3; k++)
-					if (MAP[i + checky[k]][j + checkx[k]] == 1)
-						flag++;
-				if (flag == 3)cnt++;
+				{
+					if (MAP[i + checky[k]][j + checkx[k]] != 1) {
+						flag = 1; break;
+					}
+				}
+					
+				if (flag == 0)cnt++;
 			}
 		}
 	}
