@@ -4,7 +4,7 @@
 #include <algorithm>
 using namespace std;
 
-// 뭐가 틀린거지... 왜 틀리는지 모르겠네 50분 사용
+// 로직은 맞는데 범위 = 안줘서 틀림..
 
 int ydir[] = { 0,-1,0,1 };
 int xdir[] = { 1,0,-1,0 };
@@ -14,9 +14,8 @@ int MAP[101][101];
 int N; // 드래곤 커브 개수
 vector<int> dir;
 
-void curve(vector<int>& dir) {
-	int now = dir.size();
-	for (int i = now - 1; i >= 0; i--) {
+void curve() {
+	for (int i = dir.size() - 1; i >= 0; i--) {
 		// 다음 방향을 구하고
 		int d = (dir[i] + 1) % 4;
 		// 다음 좌표 
@@ -24,7 +23,7 @@ void curve(vector<int>& dir) {
 		ex += xdir[d];
 		// 하나의 드래곤 커브를 그렸다!
 		MAP[ey][ex] = 1;
-		// 다음 방향을 담고
+		// 다음 방향을 담는다
 		dir.push_back(d);
 	}
 }
@@ -39,24 +38,24 @@ int main() {
 
 		dir.clear();
 
-		// 지도에 표시
+		// 드래곤 커브의 시작점을 그리자
 		MAP[y][x] = 1;
-		// 0세대 셋팅
+		// 0세대 드래곤 커브를 그려보자
 		ex = x + xdir[d];
 		ey = y + ydir[d];
-
+		// 0세대 드래곤 커브를 그렸다!
 		MAP[ey][ex] = 1;
 		// 방향 정보 저장
 		dir.push_back(d);
 		// 이제 g세대 까지 드래곤 커브를 그려보자!
 		for (int i = 0; i < g; i++)
-			curve(dir);
+			curve();
 	}
 
 	// 다 그렸으면 네 꼭짓점 모두 드래곤 커브인 개수를 찾자
 	int cnt = 0;
-	for (int i = 0; i < 99; i++)
-		for (int j = 0; j < 99; j++)
+	for (int i = 0; i <= 99; i++)
+		for (int j = 0; j <= 99; j++)
 			if (MAP[i][j] && MAP[i][j + 1] && MAP[i + 1][j] && MAP[i + 1][j + 1])
 				cnt++;
 
