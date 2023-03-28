@@ -104,7 +104,7 @@ void solve() {
 }
 
 
-int main(void) {
+int main() {
     fastIO;
 
     input();
