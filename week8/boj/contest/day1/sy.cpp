@@ -37,7 +37,7 @@ void solve() {
         for (int i = 1; i <= N; i++) {
             for (int j = 1; j <= N; j++) {
                 // 그 칸에 나무가 없으면 continue
-                if (MAP[i][j].size() == 0)
+                if(!MAP[i][j].size())
                     continue;
 
                 int die = 0;
@@ -72,7 +72,7 @@ void solve() {
         for (int i = 1; i <= N; i++) {
             for (int j = 1; j <= N; j++) {
                 // 그 칸에 나무가 없으면 continue
-                if (MAP[i][j].size() == 0)
+                if (!MAP[i][j].size())
                     continue;
 
                 for (int k = 0; k < MAP[i][j].size(); k++) {
