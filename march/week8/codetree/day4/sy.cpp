@@ -9,7 +9,7 @@ using namespace std;
 // broken : 고장 여부, head, tail
 // um  
 // key : id
-// value : Box 인덱스
+// value : Box
 // 더블 링크드리스트 구현 문제
 // 이게 왜 되는걸까
 
