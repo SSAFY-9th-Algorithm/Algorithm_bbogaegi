@@ -3,7 +3,7 @@
 #include <queue>
 using namespace std;
 
-// 이제 
+// 완완
 struct Node {
 	int y, x;
 };
@@ -24,6 +24,7 @@ int bfs(int y, int x, int n) {
 
 	int visited[20][20] = { 0, };
 	visited[y][x] = 1;
+	if (!n) visited[y][x] = -MAP[y][x];
 
 	while (!q.empty())
 	{
@@ -50,7 +51,7 @@ int bfs(int y, int x, int n) {
 				continue;
 			// 목적지에 도착하면 시간 반환!
 			if (!n && MAP[ny][nx] == MAP[y][x]) {
-				timeMAP[ny][nx] = -(MAP[ny][nx] - visited[now.y][now.x]);
+				timeMAP[ny][nx] = visited[now.y][now.x] + 1;
 				return timeMAP[ny][nx];
 			}
 			// 거기까지 가는데 걸리는 시간이 기록된 시간보다 많이 걸리면 continue
@@ -106,7 +107,7 @@ int main() {
 	//printf("\n");
 	//for (int i = 0; i < N; i++) {
 	//	for (int j = 0; j < N; j++)
-	//		printf("%d ", timeMAP[i][j]);
+	//		printf("%d ", MAP[i][j]);
 	//	printf("\n");
 	//}
 
