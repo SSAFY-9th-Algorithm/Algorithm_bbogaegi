@@ -3,6 +3,15 @@
 #include <queue>
 using namespace std;
 
+/*
+설계
+
+1. 사람마다 가까운 베이스 캠프 선택
+2. bfs를 돌려서 사람마다 시간 기록
+3. 그걸 기반으로 갈 수 있으면 가고 못가면 continue
+4. 가장 오래 걸린 시간이 답
+*/
+
 // 완완
 struct Node {
 	int y, x;
