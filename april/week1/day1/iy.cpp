@@ -28,17 +28,22 @@ vector<Block> people[31];
 Block findCamp(int nowman) {
 	
 	Block conv = v[nowman - 1];
-	vector<Block>tmpcamp;
+	Block nowCamp;
 	queue<Block>q;
 	q.push(conv);
 
+	int flag = 0;
 	while (!q.empty()) {
 
-		if (!tmpcamp.empty())
+		if (flag == 1)
 			break;
 
 		int cursize = q.size();
 		for (int c = 0; c < cursize; c++) {
+			
+			if (flag == 1)
+				break;
+
 			Block block = q.front();
 			q.pop();
 
@@ -49,33 +54,82 @@ Block findCamp(int nowman) {
 				if (ny < 0 || nx < 0 || ny >= n || nx >= n)
 					continue;
 
-				if (visited[ny][nx] != 0)
-					continue;
+				if (MAP[ny][nx] == 1 && MAP[ny][nx] != 3) {
+					nowCamp = { ny, nx };
+					flag = 1;
+					break;
+				}
 
-				if (MAP[ny][nx] == 1 && MAP[ny][nx] != 3)
-					tmpcamp.push_back({ ny, nx });
+				if (MAP[ny][nx] == 3)
+					continue;
 
 				q.push({ ny, nx });
 			}
 		}
 	}
 
-	Block nowCamp;
-	if (tmpcamp.size() == 1) {
-		nowCamp = tmpcamp[0];
-	}
+	return nowCamp;
 
-	for (int i = 0; i < tmpcamp.size(); i++) {
-		for (int j = i + 1; j < tmpcamp.size(); j++) {
-			if (tmpcamp[i].y < tmpcamp[i].y)
-				nowCamp = tmpcamp[i];
-			else
-				nowCamp = tmpcamp[i];
+}
+
+int goConv(Block nowloc, Block manconv) {
+
+	int tmpMAP[16][16] = {0, };
+	queue<Block>qb;
+	qb.push(manconv);
+	tmpMAP[manconv.y][manconv.x] = 1;
+	int flag = 0;
+
+	while (!qb.empty()) {
+
+		if (flag == 1)
+			break;
+
+		Block now = qb.front();
+		qb.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int ny = now.y + diry[i];
+			int nx = now.x + dirx[i];
+
+			if (ny < 0 || nx < 0 || ny >= n || nx >= n)
+				continue;
+			if (tmpMAP[ny][nx] != 0)
+				continue;
+
+			if (ny == nowloc.y && nx == nowloc.x) {
+				tmpMAP[ny][nx] = tmpMAP[now.y][now.x] + 1;
+				flag = 1;
+				break;
+			}
+
+			if (MAP[ny][nx] == 3)
+				continue;
+
+			tmpMAP[ny][nx] = tmpMAP[now.y][now.x] + 1;			
+
+			qb.push({ ny, nx });
 		}
 	}
 
-	return nowCamp;
+	int movedir = -1;
+	for (int i = 0; i < 4; i++) {
+		int ny = nowloc.y + diry[i];
+		int nx = nowloc.x + dirx[i];
 
+		if (ny < 0 || nx < 0 || ny >= n || nx >= n)
+			continue;
+
+		if (tmpMAP[ny][nx] == tmpMAP[nowloc.y][nowloc.x] - 1) {
+			movedir = i;
+			break;
+		}
+	}
+
+	if (movedir == -1)
+		cout << -1 << '\n';
+
+	return movedir;
 }
 
 int main() {
@@ -97,27 +151,45 @@ int main() {
 	while (1) {
 
 		//1번
-		for (int i = 1; i <= m; i++) {
-			if (!people[i].empty()) {
-				//해당 사람 이동
-				int nowman = i;
-				Block nowloc = people[i][0];
+		for (int m = 1; m <= t; m++) {
 
-				Block manconv = v[i - 1];
+			if (!people[m].empty()){
+				int nowman = m;
+				//현위치
+				Block nowloc = people[m][0];
+				//가야하는 편의점 위치
+				Block manconv = v[m - 1];
+				//갈 방향을 확정해서 이동할 위치
+				int movedir = goConv(nowloc, manconv);
 
-				//nowman이 manconv를 향해서 방향 잡고 가야함.
+				people[m].clear();
+				people[m].push_back({ nowloc.y+diry[movedir],  nowloc.x + dirx[movedir] });
 
-
+				if (nowloc.y + diry[movedir] == manconv.y && nowloc.x + dirx[movedir] == manconv.x) {
+					MAP[manconv.y][manconv.x] = 3;
+					people[m].clear();
+				}
 			}
 		}
 
-		if (t <= m+1) {
+		if (t <= m) {
 			//3번
 			int nowman = t;
 
 			Block nowCamp = findCamp(nowman);
 			MAP[nowCamp.y][nowCamp.x] = 3;
 			people[nowman].push_back(nowCamp);
+		}
+
+		int stopflag = 0;
+		for (int k = 1; k <= m; k++) {
+			if (people[k].empty()) 
+				stopflag++;
+		}
+
+		if (stopflag == m) {
+			cout << t;
+			return 0;
 		}
 
 		t++;
