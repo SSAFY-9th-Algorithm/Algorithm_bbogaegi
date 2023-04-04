@@ -3,8 +3,7 @@
 #include <queue>
 using namespace std;
 
-// 왜 맞는거지? 
-// 로직이 틀렸는데?
+// 이제 
 struct Node {
 	int y, x;
 };
