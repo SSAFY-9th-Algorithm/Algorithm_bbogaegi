@@ -3,6 +3,8 @@
 #include <queue>
 using namespace std;
 
+// 왜 맞는거지? 
+// 로직이 틀렸는데?
 struct Node {
 	int y, x;
 };
@@ -13,7 +15,7 @@ int xdir[] = { 0,-1,1,0 };
 
 int N, M;
 int MAP[20][20];
-int timeMAP[20][20];
+int timeMAP[20][20]; // 해당 베이스캠프, 편의점까지 가는데 걸리는 시간 표시
 vector<Node> store;
 vector<Node> start;
 
@@ -44,18 +46,23 @@ int bfs(int y, int x, int n) {
 				continue;
 			if (visited[ny][nx])
 				continue;
+			// 이미 앞에서 선택된 베이스 캠프가 막고 있으면 못감!
+			if (n && timeMAP[ny][nx] <= n && timeMAP[ny][nx])
+				continue;
+			// 목적지에 도착하면 시간 반환!
 			if (!n && MAP[ny][nx] == MAP[y][x]) {
 				timeMAP[ny][nx] = -(MAP[ny][nx] - visited[now.y][now.x]);
 				return timeMAP[ny][nx];
 			}
+			// 거기까지 가는데 걸리는 시간이 기록된 시간보다 많이 걸리면 continue
 			if (!n && timeMAP[ny][nx] && timeMAP[ny][nx] <= visited[now.y][now.x])
 				continue;
-		
+
 			visited[ny][nx] = visited[now.y][now.x] + 1;
 			q.push({ ny,nx });
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -74,7 +81,7 @@ void solve() {
 	//		printf("%d ", timeMAP[i][j]);
 	//	printf("\n");
 	//}
-	
+
 	printf("%d\n", t);
 }
 
@@ -87,7 +94,7 @@ int main() {
 	for (int i = 0; i < M; i++) {
 		int y, x;
 		scanf("%d %d", &y, &x);
-		store.push_back({ y-1, x-1 });
+		store.push_back({ y - 1, x - 1 });
 	}
 	// 가고자하는 편의점과 베이스 캠프 사이의 거리를 구해서
 	// 몇번 사람이 어디 베이스 캠프에 갈지 표시해두자
@@ -96,6 +103,15 @@ int main() {
 		bfs(now.y, now.x, i + 1);
 		MAP[now.y][now.x] = -(i + 1);
 	}
+
+	//printf("\n");
+	//for (int i = 0; i < N; i++) {
+	//	for (int j = 0; j < N; j++)
+	//		printf("%d ", timeMAP[i][j]);
+	//	printf("\n");
+	//}
+
 	solve();
 	return 0;
 }
+
