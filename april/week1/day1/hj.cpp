@@ -1,6 +1,5 @@
-// 베이스캠프 못지나가게 하라면서
-// 못지나가게 하면 답 안나옴
-// 왜지?
+// 나보다 작은 친구의 베이스캠프는 못지나가도록 고침
+// 전에는 왜 된거지?
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <cstdio>
@@ -59,6 +58,8 @@ void bfs(Person start) {
 				continue;
 			if (visited[ny][nx])
 				continue;
+			if (mat[ny][nx] && mat[ny][nx] != 1 && mat[ny][nx] < start.idx)
+				continue;
 			visited[ny][nx] = visited[now.y][now.x] + 1;
 			if (mat[ny][nx] == 1) {
 				p[start.idx].y = ny;
@@ -79,7 +80,7 @@ void bfs2(Person start) {
 
 	q.push({ start.y, start.x });
 	visited[start.y][start.x] = start.idx;
-	//times[start.y][start.x] = start.idx;
+	times[start.y][start.x] = start.idx;
 	while (!q.empty()) {
 		Node now = q.front();
 		q.pop();
