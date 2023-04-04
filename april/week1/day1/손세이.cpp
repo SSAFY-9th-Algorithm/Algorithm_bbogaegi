@@ -84,13 +84,6 @@ void solve() {
 		t = max(t, bfs(now.y, now.x, 0));
 	}
 
-	//printf("\n");
-	//for (int i = 0; i < N; i++) {
-	//	for (int j = 0; j < N; j++)
-	//		printf("%d ", timeMAP[i][j]);
-	//	printf("\n");
-	//}
-
 	printf("%d\n", t);
 }
 
@@ -112,13 +105,6 @@ int main() {
 		bfs(now.y, now.x, i + 1);
 		MAP[now.y][now.x] = -(i + 1);
 	}
-
-	//printf("\n");
-	//for (int i = 0; i < N; i++) {
-	//	for (int j = 0; j < N; j++)
-	//		printf("%d ", MAP[i][j]);
-	//	printf("\n");
-	//}
 
 	solve();
 	return 0;
