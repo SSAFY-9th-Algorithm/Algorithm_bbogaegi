@@ -1,6 +1,3 @@
-// 나보다 작은 친구의 베이스캠프는 못지나가도록 고침
-// 전에는 왜 된거지?
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <cstdio>
 #include <cstring>
@@ -8,6 +5,21 @@
 #include <queue>
 #include <iostream>
 using namespace std;
+
+/*
+시뮬레이션으로는 최단 경로를 찾아주기가 힘듦 -> 어떤 방향으로 가야 최단이지? 방향에 대한 처리가 어려움
+미리 편의점과의 최단 거리의 베이스캠프를 bfs에서 구해줌
+  -> Person 구조체의 y, x는 베이스캠프 위치 | dy, dx는 목적 편의점 위치
+
+1. 모든 사람에 대하여 가장 가까운 베이스캠프 정보를 넣어줌 -> bfs() 함수 안에서 구해줌
+
+2. 낮은 번호의 사람부터 편의점에 위치시키되, maxTime 정보를 업데이트해줌 
+   -> bfs2() 함수 안에서, times에 베이스캠프와 편의점 도착 시간을 기록
+       => 높은 번호의 사람이 먼저 편의점에 도착해서 낮은 사람의 최단 경로에 그 편의점이 위치하면
+          최단 경로를 업데이트(갱신)해줘야할 것 같은데 그 부분이 빠져있음
+
+왜 되지?!
+*/
 
 struct Node {
 	int y;
@@ -58,6 +70,7 @@ void bfs(Person start) {
 				continue;
 			if (visited[ny][nx])
 				continue;
+			// 나보다 작은 친구의 베이스 캠프는 못지나가도록 고침
 			if (mat[ny][nx] && mat[ny][nx] != 1 && mat[ny][nx] < start.idx)
 				continue;
 			visited[ny][nx] = visited[now.y][now.x] + 1;
@@ -93,7 +106,7 @@ void bfs2(Person start) {
 			if (visited[ny][nx] || times[ny][nx])
 				continue;
 			visited[ny][nx] = visited[now.y][now.x] + 1;
-			if (start.dy == ny && start.dx == nx) {
+			if (start.dy == ny && start.dx == nx) { // 나의 편의점인가!
 				times[ny][nx] = visited[ny][nx];
 				if (maxTime < times[ny][nx])
 					maxTime = times[ny][nx];
