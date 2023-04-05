@@ -22,9 +22,8 @@ int xdir_k[] = { -1,1,1,-1 };
 
 // 나무 성장
 void grow() {
-	for(int i=0;i<N;i++){
+	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
-
 			if (MAP[i][j][0] < 1)
 				continue;
 			// 해당 위치부터 4방향 탐색
@@ -57,22 +56,22 @@ void spread() {
 	int COPY[21][21] = {0,};
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
-			if (MAP[i][j][0] > 0 && MAP[i][j][2] != 0) {
-				int tmp = MAP[i][j][0] / MAP[i][j][2];
-				// 4방향 번식
-				for (int d = 0; d < 4; d++) {
-					int ny = i + ydir[d];
-					int nx = j + xdir[d];
+			if (MAP[i][j][0] < 1 || MAP[i][j][2] == 0)
+				continue; 
+			int tmp = MAP[i][j][0] / MAP[i][j][2];
+			// 4방향 번식
+			for (int d = 0; d < 4; d++) {
+				int ny = i + ydir[d];
+				int nx = j + xdir[d];
 
-					if (ny < 0 || nx < 0 || ny >= N || nx >= N)
-						continue;
-					// 빈 공간이면 번식한다!
-					if (MAP[ny][nx][0] == 0 && MAP[ny][nx][1] == 0) {
-						COPY[ny][nx] += tmp;
-					}
-
+				if (ny < 0 || nx < 0 || ny >= N || nx >= N)
+					continue;
+				// 빈 공간이면 번식한다!
+				if (MAP[ny][nx][0] == 0 && MAP[ny][nx][1] == 0) {
+					COPY[ny][nx] += tmp;
 				}
 			}
+			
 		}
 	}
 	for (int i = 0; i < N; i++) 
@@ -101,22 +100,22 @@ ll getSum(int y, int x) {
 }
 // 제초제를 뿌릴 위치 선정
 Node getPos() {
-	ll MAX = -21e8;
+	ll MAX = -1;
 	int mxy = 0, mxx = 0;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
+			if (MAP[i][j][0] < 1)
+				continue;
 			// 나무가 있다면
-			if (MAP[i][j][0] > 0) {
-				ll tmp = getSum(i, j);
-				if (tmp > MAX) {
-					MAX = tmp;
-					mxy = i;
-					mxx = j;
-				}
+			ll tmp = getSum(i, j);
+			if (tmp > MAX) {
+				MAX = tmp;
+				mxy = i;
+				mxx = j;
 			}
 		}
 	}
-	if(MAX != -21e8)
+	if(MAX != -1)
 		kill += MAX;
 	return { mxy, mxx };
 }
@@ -132,11 +131,16 @@ void killTree() {
 		for (int k = 1; k <= K; k++) {
 			int ny = pos.y + ydir_k[i]*k;
 			int nx = pos.x + xdir_k[i]*k;
-
+			// 범위를 벗어나면 break
 			if (ny < 0 || nx < 0 || ny >= N || nx >= N)
 				break;
-			if (MAP[ny][nx][0] < 1)
+			// 빈칸, 벽이면 break
+			if (MAP[ny][nx][0] < 0) 
 				break;
+			if (MAP[ny][nx][0] == 0) {
+				MAP[ny][nx][1] = C + 1;
+				break;
+			}
 			// 얘도 죽었다!
 			MAP[ny][nx][0] = 0;
 			MAP[ny][nx][1] = C + 1;
@@ -167,44 +171,16 @@ void simul() {
 		int de = 1;
 		// 제초제 시간 줄이기
 		countDown();
-		printf("\n===죽이기 전 번식 전=====\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				printf("%3d ", MAP[i][j][0]);
-			printf("\n");
-		}
+
 		// 나무 성장
 		grow();
-		printf("\n===성장 후=====\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				printf("%3d ", MAP[i][j][0]);
-			printf("\n");
-		}
+
 		// 나무 번식
 		spread();
-		printf("\n===번식 후=====\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				printf("%3d ", MAP[i][j][0]);
-			printf("\n");
-		}
+	
 		// 제초제 살포
 		killTree();
 
-		printf("\n===죽인 후=====\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				printf("%3d ", MAP[i][j][0]);
-			printf("\n");
-		}
-
-		printf("\n===죽인 후 제초제=====\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				printf("%3d ", MAP[i][j][1]);
-			printf("\n");
-		}
 		if (check())
 			break;
 	}
@@ -212,7 +188,7 @@ void simul() {
 }
 
 int main() {
-	freopen("input.txt", "r", stdin);
+	//freopen("input.txt", "r", stdin);
 	scanf("%d %d %d %d", &N, &M, &K, &C);
 	for (int i = 0; i < N; i++)
 		for (int j = 0; j < N; j++) {
