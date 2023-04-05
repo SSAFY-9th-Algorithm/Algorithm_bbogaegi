@@ -79,15 +79,12 @@ void input() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			scanf("%d", &mat[i][j]);
-			/*if (mat[i][j] > 0) {
-				trees.push_back({ i, j, mat[i][j] });
-			}*/
 		}
 	}
 }
 
 void grow() {
-	print_mat(mat);
+	//print_mat(mat);
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (mat[i][j] > 0) {
@@ -105,7 +102,7 @@ void grow() {
 			}
 		}
 	}
-	print_mat(mat);
+	//print_mat(mat);
 }
 
 void breed() {
@@ -126,6 +123,8 @@ void breed() {
 						continue;
 					if (mat[ny][nx] != 0)
 						continue;
+					if (kmat[ny][nx])
+						continue;
 					positive_dir.push_back({ ny, nx, 0 });
 				}
 				int pNum = positive_dir.size();
@@ -141,30 +140,31 @@ void breed() {
 			}
 		}
 	}
-	printf("---------bmat------\n");
-	print_mat(bmat);
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			mat[i][j] += bmat[i][j];
 		}
 	}
-	print_mat(mat);
 }
 
 int kill_tree(int ntime) {
+	int wtime = ntime + c + 1;
 	Tree target = diagonal();
+	kmat[target.y][target.x] = wtime;
+	mat[target.y][target.x] = 0;
 	for (int d = 0; d < 4; d++) {
-		for (int g = 0; g <= k; g++) {
+		for (int g = 1; g <= k; g++) {
 			int ny = target.y + dydir[d] * g;
 			int nx = target.x + dxdir[d] * g;
 			if (ny < 0 || nx < 0 || ny >= n || nx >= n)
 				break;
 			if (mat[ny][nx] == -1)
 				break;
-			kmat[ny][nx] = ntime + c;
-			mat[ny][nx] = -2;
-			if (mat[ny][nx] == 0)
+			kmat[ny][nx] = wtime;
+			if (mat[ny][nx] == 0) {
 				break;
+			}
+			mat[ny][nx] = 0;
 		}
 	}
 	return target.mnt;
@@ -185,13 +185,14 @@ int main() {
 	input();
 	int res = 0;
 	for (int rtime = 1; rtime <= m; rtime++) {
+		
 		reset_kill(rtime);
+		
 		grow();
+		
 		breed();
-		int kNum = kill_tree(rtime);
-		printf("%d\n\n", kNum);
-		res += kNum;
-		print_mat(mat);
+
+		res += kill_tree(rtime);
 	}
 	printf("%d\n", res);
 }
