@@ -30,6 +30,8 @@ vector<Tree>trees;
 int diry[4] = { -1, 1, 0, 0 };
 int dirx[4] = { 0, 0, -1, 1 };
 int tmpMAP[21][21];
+int pestMAP[21][21];
+int deadPestTreeCnt = 0;
 
 int grow(Tree nowtree) {
 
@@ -127,6 +129,38 @@ int findSpot(int y, int x) {
 
 void spreadMed(int y, int x) {
 
+	deadPestTreeCnt += MAP[y][x];
+	pestMAP[y][x] = c + 1;
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 1; j <= k; j++) {
+			int ny = y + dy[i] * j;
+			int nx = x + dx[i] * j;
+
+			if (ny == 0 && nx == 1)
+				int de = 1;
+
+			if (ny < 0 || nx < 0 || ny >= n || nx >= n)
+				continue;
+
+			if (MAP[ny][nx] <= 0) {
+				if(MAP[ny][nx] == 0)
+				pestMAP[ny][nx] = c + 1;
+				break;
+			}
+
+			deadPestTreeCnt += MAP[ny][nx];
+			pestMAP[ny][nx] = c + 1;
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (pestMAP[i][j] == c + 1)
+				MAP[i][j] = -2;
+		}
+	}
+
 }
 
 
@@ -140,42 +174,80 @@ int main() {
 		}
 	}
 
-	int ts = trees.size();
-	for (int i = 0; i < ts; i++) {
-		int growage = grow(trees[i]);
-		trees[i].aroundTreeCnt = growage;
-		trees[i].age += growage;
-		MAP[trees[i].y][trees[i].x] += growage;
-		trees[i].chk = 1;
-	}
-	for (int i = 0; i < newtrees.size(); i++) {
-		trees.push_back({newtrees[i]});
-	}
-	
+	for (int t = 0; t < m; t++) {
+		int ts = trees.size();
+		for (int i = 0; i < ts; i++) {
+			int growage = grow(trees[i]);
+			trees[i].aroundTreeCnt = growage;
+			trees[i].age += growage;
+			MAP[trees[i].y][trees[i].x] += growage;
+			trees[i].chk = 1;
+		}
+		for (int i = 0; i < newtrees.size(); i++) {
+			trees.push_back({ newtrees[i] });
+		}
 
-	memcpy(tmpMAP, MAP, sizeof(MAP));
-	for (int i = 0; i < trees.size(); i++) {
-		breed(trees[i]);
-		//trees[i].aroundTreeCnt = growage;
-		//trees[i].age += growage;
-	}
 
-	int maxDeadCnt = -21e8;
-	int maxy = 0;
-	int maxx = 0;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (MAP[i][j] < 0)
-				continue;
-			int deadTreeCnt = findSpot(i, j);
-			if (maxDeadCnt < deadTreeCnt) {
-				maxDeadCnt = deadTreeCnt;
-				maxy = i;
-				maxx = j;
+		memcpy(tmpMAP, MAP, sizeof(MAP));
+		for (int i = 0; i < trees.size(); i++) {
+			breed(trees[i]);
+		}
+
+		int maxDeadCnt = -21e8;
+		int maxy = 0;
+		int maxx = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (MAP[i][j] < 0)
+					continue;
+				int deadTreeCnt = findSpot(i, j);
+				if (maxDeadCnt < deadTreeCnt) {
+					maxDeadCnt = deadTreeCnt;
+					maxy = i;
+					maxx = j;
+				}
 			}
 		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (pestMAP[i][j] > 0)
+					pestMAP[i][j]--;
+				if (pestMAP[i][j] == 0 && MAP[i][j] == -2)
+					MAP[i][j] = 0;
+			}
+		}
+
+		spreadMed(maxy, maxx);
+
+		trees.clear();
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (MAP[i][j] > 0)
+					trees.push_back({ i,j,MAP[i][j] });
+			}
+		}
+		newtrees.clear();
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				printf("%3d ", MAP[i][j]);
+			}
+			cout << endl;
+		}
+		cout << "==============\n";
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				printf("%3d ", pestMAP[i][j]);
+			}
+			cout << endl;
+		}
+		cout << "########################\n";
 	}
 
-	spreadMed(maxy, maxx);
+
+	
+
+	cout << deadPestTreeCnt;
 
 }
