@@ -1,24 +1,23 @@
-/* 테스트케이스 16 불통
-10 130 8 8
--1 0 0 0 86 0 0 0 0 0 
-0 27 0 0 0 0 0 0 0 0 
-0 -1 0 -1 0 0 0 -1 0 69 
-0 47 0 0 0 0 51 0 0 0 
-0 0 0 0 0 72 0 0 0 0 
-0 0 0 0 0 0 0 -1 0 0 
-0 0 0 0 0 0 0 0 0 -1 
-0 0 0 -1 0 0 0 0 55 0 
-84 0 0 0 0 0 0 -1 0 0 
-0 0 96 50 0 0 0 0 0 0 
-
-답 : 18459
-나의출력 : 18484
-*/
-
+//thanks to 세이언냐
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <cstring>
 using namespace std;
+
+/* 나무박멸
+n*n 격자 - 나무의 그루수 & 벽의 정보
+제초제를 뿌려 나무의 성장 억제
+k의 범위만큼 대각선으로 퍼짐. 벽이 있는 경우 가로막혀 전파 X.
+1. 인접한 네 개의 칸 중 나무가 있는 칸의 수만큼 나무 성장. (모든 나무 동시 성장)
+2. 기존 나무들은 인접한 4개의 칸 중 벽, 다른 나무, 제초제 모두 없는 칸에 번식.
+이때, 각 칸의 나무 그루 수에서 총 번식이 가능한 칸의 개수만큼 나누어진 그루수만큼 번식. (나머지 버림)
+번식도 모든 나무 동시에 발생
+3. 각 칸 중 제초제를 뿌렸을 때 나무가 가장 많이 박멸되는 칸에 제초제 뿌림.
+나무가 없는 칸에 뿌리면 박멸되는 나무 없음. 나무가 있는 칸은 4개의 대각선 방향으로 k칸만큼 전파.
+전파되는 도중 벽 OR 나무 없는 칸은 그 칸까지 제초제 뿌려지고 그 이후 칸으로 전파 x.
+제초제 뿌려진 칸에는 C년만큼 제초제가 남아있다가 C+1 년째가 될 때 사라짐.
+제초제 뿌려진 곳에 다시 제초제가 뿌려지면 새로 뿌려진 해부터 다시 C년 동안 제초제 유지.
+ */
 
 int n, m, k, c;
 int MAP[21][21];
@@ -28,6 +27,7 @@ struct Tree {
 	int age;
 	int aroundTreeCnt;
 };
+
 vector<Tree>trees;
 vector<Tree>newtrees;
 int diry[4] = { -1, 1, 0, 0 };
@@ -81,7 +81,7 @@ void breed(Tree nowtree) {
 		if (ny < 0 || nx < 0 || ny >= n || nx >= n)
 			continue;
 
-		if (MAP[ny][nx] == 0 && pestMAP[ny][nx] == 0) {
+		if (tmpMAP[ny][nx] == 0 && pestMAP[ny][nx] == 0) { //tmpMAP과 MAP 구분 사용 주의!!!
 			MAP[ny][nx] += breedScore;
 			newtrees.push_back({ ny, nx, MAP[ny][nx] });
 		}
@@ -100,14 +100,9 @@ void breed(Tree nowtree) {
 
 int dy[4] = { -1, 1, -1, 1 };
 int dx[4] = { -1, 1, 1, -1 };
+
 int findSpot(int y, int x) {
-
-	int deadTreeCnt = 0;
-
-	if (MAP[y][x] <= 0)
-		return deadTreeCnt;
-
-	deadTreeCnt += MAP[y][x];
+	int deadTreeCnt = MAP[y][x];
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 1; j <= k; j++) {
@@ -115,9 +110,9 @@ int findSpot(int y, int x) {
 			int nx = x + dx[i] * j;
 
 			if (ny < 0 || nx < 0 || ny >= n || nx >= n)
-				continue;
+				break;
 
-			if (MAP[ny][nx] <= 0)
+			if (MAP[ny][nx] <= 0 || pestMAP[ny][nx])
 				break;
 
 			deadTreeCnt += MAP[ny][nx];
@@ -125,17 +120,11 @@ int findSpot(int y, int x) {
 	}
 
 	return deadTreeCnt;
-
 }
 
 void spreadMed(int y, int x) {
 
-	//deadPestTreeCnt += MAP[y][x];
 	pestMAP[y][x] = c;
-	MAP[y][x] = -2;
-
-	//if (deadPestTreeCnt <= 0)
-	//	return;
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 1; j <= k; j++) {
@@ -143,12 +132,10 @@ void spreadMed(int y, int x) {
 			int nx = x + dx[i] * j;
 
 			if (ny < 0 || nx < 0 || ny >= n || nx >= n)
-				continue;
+				break;
 
 			if (MAP[ny][nx] <= 0) {
-				if (MAP[ny][nx] == 0)
-					pestMAP[ny][nx] = c;
-				else if (MAP[ny][nx] == -2)
+				if (MAP[ny][nx] == 0 || MAP[ny][nx] == -2)
 					pestMAP[ny][nx] = c;
 				break;
 			}
@@ -187,7 +174,7 @@ int main() {
 			trees[i].age += growage;
 			MAP[trees[i].y][trees[i].x] += growage;
 		}
-
+		// 번식
 		memcpy(tmpMAP, MAP, sizeof(MAP));
 		for (int i = 0; i < trees.size(); i++) {
 			breed(trees[i]);
@@ -196,15 +183,18 @@ int main() {
 			trees.push_back({ newtrees[i] });
 		}
 		newtrees.clear();
-		//memset(tmpMAP, 0, sizeof(tmpMAP));
 
-		int maxDeadCnt = -21e8;
-		int maxy = 0;
-		int maxx = 0;
+		// 제초제를 뿌릴 위치 선정
+		//int de = 1;
+		int maxDeadCnt = -1;
+		int maxy = -1;
+		int maxx = -1;
+		int de = 1;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				if (MAP[i][j] < 0)
+				if (MAP[i][j] < 1)
 					continue;
+
 				int deadTreeCnt = findSpot(i, j);
 				if (maxDeadCnt < deadTreeCnt) {
 					maxDeadCnt = deadTreeCnt;
@@ -214,8 +204,10 @@ int main() {
 			}
 		}
 
-		deadPestTreeCnt += maxDeadCnt;
 
+		if (maxDeadCnt != -1)
+			deadPestTreeCnt += maxDeadCnt;
+		// 제초제 시간 줄이기
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (pestMAP[i][j] > 0)
@@ -224,9 +216,10 @@ int main() {
 					MAP[i][j] = 0;
 			}
 		}
-
+		// 제초제 뿌리기
 		spreadMed(maxy, maxx);
 
+		// 나무 정보 업데이트
 		trees.clear();
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
@@ -235,6 +228,7 @@ int main() {
 			}
 		}
 	}
+
 
 	cout << deadPestTreeCnt;
 
