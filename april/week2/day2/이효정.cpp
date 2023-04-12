@@ -1,3 +1,5 @@
+// https://www.acmicpc.net/problem/11729
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
