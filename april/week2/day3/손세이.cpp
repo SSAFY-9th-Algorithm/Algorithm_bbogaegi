@@ -4,6 +4,12 @@
 using namespace std;
 #define MAX 201
 
+// 설계
+// #1. 맵을 0,0 부터 200, 200까지 매핑
+// #2. 맵에 기본 코스트 1을 주고
+// #3. 지하철은 cost 0
+// #4. dijkstra
+// -> 더 좋은 방법이 있을거같은데 
 
 struct Node {
 	int y, x;
