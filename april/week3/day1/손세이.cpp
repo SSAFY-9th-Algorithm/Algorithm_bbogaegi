@@ -4,6 +4,12 @@
 #include <queue>
 using namespace std;
 
+// 설계 
+// dfs로 M개의 치킨집을 고르고
+// 도시의 치킨 거리를 계산하여
+// 가장 작은 값을 구한다
+// dfs를 선택한 이유 -> M개를 고르는 모든 경우를 봐야하는 완전 탐색이라는 생각이 들어서
+
 struct Node {
 	int y, x;
 };
@@ -20,7 +26,7 @@ void input() {
 	for (int i = 1; i <= N; i++) {
 		for (int j = 1; j <= N; j++) {
 			cin >> MAP[i][j];
-			if(MAP[i][j] == 1)
+			if (MAP[i][j] == 1)
 				COPY[i][j] = MAP[i][j];
 			if (MAP[i][j] == 2)
 				chicken.push_back({ i, j });
@@ -49,7 +55,7 @@ int getDist() {
 	vector<Node> chick, home;
 	int mdist = 200;
 	int sum = 0;
-	
+
 	getHomeC(home, chick);
 	int de = 1;
 	int hsize = home.size();
@@ -70,7 +76,6 @@ int getDist() {
 
 // M개를 골라보자
 void dfs(int now, int cnt) {
-	
 	// 기저조건 -> M개를 고르면 종료
 	if (cnt == M) {
 		int sum = getDist();
@@ -86,7 +91,7 @@ void dfs(int now, int cnt) {
 	COPY[tmp.y][tmp.x] = 2;
 	dfs(now + 1, cnt + 1);
 	COPY[tmp.y][tmp.x] = 0;
-	
+
 	// 안고른다
 	dfs(now + 1, cnt);
 }
@@ -97,6 +102,7 @@ void solve() {
 }
 
 int main() {
+	fastIO;
 	input();
 	solve();
 	return 0;
