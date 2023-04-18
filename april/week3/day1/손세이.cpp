@@ -15,20 +15,21 @@ struct Node {
 };
 
 int N, M;
-int MAP[51][51];
 int COPY[51][51];
 int ans = 21e8;
-
-vector<Node> chicken;
+vector<Node> chicken, home, chick;
 
 void input() {
 	cin >> N >> M;
 	for (int i = 1; i <= N; i++) {
 		for (int j = 1; j <= N; j++) {
-			cin >> MAP[i][j];
-			if (MAP[i][j] == 1)
-				COPY[i][j] = MAP[i][j];
-			if (MAP[i][j] == 2)
+			int num;
+			cin >> num;
+			if (num == 1) {
+				COPY[i][j] = num;
+				home.push_back({ i, j });
+			}
+			if (num == 2)
 				chicken.push_back({ i, j });
 		}
 	}
@@ -38,28 +39,14 @@ int calcDist(int y1, int x1, int y2, int x2) {
 	return abs(y1 - y2) + abs(x1 - x2);
 }
 
-void getHomeC(vector<Node>& home, vector<Node>& chick) {
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= N; j++) {
-			// 집
-			if (COPY[i][j] == 1)
-				home.push_back({ i, j });
-			// 치킨 집
-			else if (COPY[i][j] == 2)
-				chick.push_back({ i, j });
-		}
-	}
-}
-
 int getDist() {
-	vector<Node> chick, home;
 	int mdist = 200;
 	int sum = 0;
 
-	getHomeC(home, chick);
 	int de = 1;
 	int hsize = home.size();
 	int csize = chick.size();
+
 	for (int i = 0; i < hsize; i++) {
 		mdist = 200;
 		Node hnow = home[i];
@@ -89,8 +76,10 @@ void dfs(int now, int cnt) {
 	// 고른다
 	Node tmp = chicken[now];
 	COPY[tmp.y][tmp.x] = 2;
+	chick.push_back(tmp);
 	dfs(now + 1, cnt + 1);
 	COPY[tmp.y][tmp.x] = 0;
+	chick.pop_back();
 
 	// 안고른다
 	dfs(now + 1, cnt);
