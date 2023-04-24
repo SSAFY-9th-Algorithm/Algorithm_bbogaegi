@@ -1,5 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
 # include <stdlib.h>
-# include <unistd.h>
 # include <iostream>
 # include <string.h>
 using namespace std;
@@ -9,40 +9,40 @@ typedef int	t_data;
 typedef struct	ListNodeType
 {
 	t_data				data; //int -> t_data
-	struct ListNodeType	*pLink;
+	struct ListNodeType* pLink;
 }	ListNode;
 
 typedef struct	LinkedListType
 {
 	int			currentElementCount; // 현재 저장된 원소의 개수
-	ListNode	*headerNode; // 헤더 노드(Header Node)
+	ListNode* headerNode; // 헤더 노드(Header Node)
 }	LinkedList;
 
-LinkedList	*createLinkedList(void)
+LinkedList* createLinkedList(void)
 {
-	LinkedList	*lst;
+	LinkedList* lst;
 
-	lst = (LinkedList *)malloc(sizeof(LinkedList));
+	lst = (LinkedList*)malloc(sizeof(LinkedList));
 	if (!lst)
 		return (0);
-	bzero(lst, sizeof(LinkedList));
+	memset(lst, 0, sizeof(LinkedList));
 	return (lst);
 }
 
-ListNode	*createListNode(int data)
+ListNode* createListNode(int data)
 {
-	ListNode	*node;
-	node = (ListNode *)malloc(sizeof(ListNode));
+	ListNode* node;
+	node = (ListNode*)malloc(sizeof(ListNode));
 	if (!node)
 		return (0);
-	bzero(node, sizeof(ListNode));
+	memset(node, 0, sizeof(ListNode));
 	node->data = data;
 	return (node);
 }
 
-bool	addLLElement(LinkedList *pList, int position, ListNode *element)
+bool	addLLElement(LinkedList* pList, int position, ListNode* element)
 {
-	ListNode	*cur;
+	ListNode* cur;
 
 	if (!pList)
 		return (false);
@@ -65,9 +65,9 @@ bool	addLLElement(LinkedList *pList, int position, ListNode *element)
 	return (true);
 }
 
-bool	addLLElementLast(LinkedList *pList, ListNode *element)
+bool	addLLElementLast(LinkedList* pList, ListNode* element)
 {
-	ListNode *cur;
+	ListNode* cur;
 
 	if (!pList || !element)
 	{
@@ -87,10 +87,10 @@ bool	addLLElementLast(LinkedList *pList, ListNode *element)
 	return (true);
 }
 
-bool	removeLLElement(LinkedList *pList, int position)
+bool	removeLLElement(LinkedList* pList, int position)
 {
-	ListNode	*cur;
-	ListNode	*next;
+	ListNode* cur;
+	ListNode* next;
 
 	if (!pList || !(pList->currentElementCount))
 		return (false);
@@ -116,9 +116,9 @@ bool	removeLLElement(LinkedList *pList, int position)
 	return (true);
 }
 
-t_data	getLLElement(LinkedList *pList, int position)
+t_data	getLLElement(LinkedList* pList, int position)
 {
-	ListNode	*ret;
+	ListNode* ret;
 
 	if (!pList || position >= pList->currentElementCount)
 		return (0);
@@ -128,13 +128,13 @@ t_data	getLLElement(LinkedList *pList, int position)
 	return (ret->data);
 }
 
-void	clearLinkedList(LinkedList *pList)
+void	clearLinkedList(LinkedList* pList)
 {
-	ListNode	*cur;
-	ListNode	*next;
+	ListNode* cur;
+	ListNode* next;
 
 	if (!pList || !(pList->currentElementCount))
-		return ;
+		return;
 	cur = pList->headerNode;
 	while (cur)
 	{
@@ -142,22 +142,22 @@ void	clearLinkedList(LinkedList *pList)
 		free(cur);
 		cur = next;
 	}
-	bzero(pList, sizeof(LinkedList));
+	memset(pList, 0, sizeof(LinkedList));
 }
 
-int	getLinkedListLength(LinkedList *pList)
+int	getLinkedListLength(LinkedList* pList)
 {
 	return (pList->currentElementCount);
 }
 
-void	deleteLinkedList(LinkedList *pList)
+void	deleteLinkedList(LinkedList* pList)
 {
 	clearLinkedList(pList);
 	free(pList);
 }
 
 int num;
-LinkedList *list[101];
+LinkedList* list[101];
 
 void input() {
 	scanf("%d", &num);
@@ -168,17 +168,25 @@ void input() {
 	for (int i = 0; i < m; i++) {
 		int a, b;
 		scanf("%d %d", &a, &b);
-		ListNode *newNode = createListNode(b);
-		addLLElement(list[a], list[a]->currentElementCount, newNode);
+		if (a > b) {
+			a = a ^ b;
+			b = a ^ b;
+			a = a ^ b;
+		}
+		ListNode* newNodeB = createListNode(b);
+		ListNode* newNodeA = createListNode(a);
+		addLLElement(list[a], list[a]->currentElementCount, newNodeB);
+		addLLElement(list[b], list[b]->currentElementCount, newNodeA);
 	}
 }
 
-int DAT[101] = {0};
+int DAT[101] = { 0 };
 int cnt = -1;
 void solution(int idx) {
 	if (DAT[idx])
 		return;
 	DAT[idx] = 1;
+	//printf("idx %d\n", idx);
 	cnt++;
 	while (list[idx]->currentElementCount) {
 		solution(getLLElement(list[idx], 0));
