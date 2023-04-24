@@ -1,11 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <queue>
-using namespace std;
-const int BUFSIZE = 101*101;
-
-// queue안 쓰고는 어떻게 구현하지?
-// ????
+const int BUFSIZE = 101 * 101;
 
 struct Node {
 	int data;
@@ -27,24 +22,23 @@ void push(int idx, int d) {
 }
 
 void bfs(int start) {
-	int cnt = 0;
+	int cnt = 0, sp = 0, ep = 0;
 	// queue 준비
-	queue<int> q;
-	q.push(start);
+	int queue[101] = { 0, };
+	queue[sp++] = start;
 	// visited 준비
 	int visited[101] = { 0, };
 	visited[start] = 1;
 
-	while (!q.empty()){ 
-		int now = q.front();
-		q.pop();
+	while (sp > ep) {
+		int now = queue[ep++];
 
 		for (Node* node = HEAD[now].next; node; node = node->next) {
 			if (visited[node->data])
 				continue;
 			visited[node->data] = 1;
 			cnt++;
-			q.push(node->data);
+			queue[sp++] = node->data;
 		}
 	}
 	printf("%d\n", cnt);
