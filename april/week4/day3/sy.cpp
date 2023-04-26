@@ -1,7 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <cstring>
+#include <string.h>
 using namespace std;
+
+// 설계
+// 1. dfs로 뽑을 수 있는 모든 조합을 뽑고 -> 완전 탐색 같아서 dfs 사용
+// 2. 실제 이닝을 진행하며 점수 계산 -> 시뮬
+// 3. 점수가 높으면 갱신
 
 int N;
 int RES[51][10];
@@ -13,7 +18,7 @@ void input() {
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
 		for (int j = 1; j <= 9; j++) {
-			scanf("%d", &RES[i][j]);
+			scanf("%d", &RES[i][j]);	
 		}
 	}
 }
@@ -23,10 +28,8 @@ void game() {
 	int pos[3] = { 0, }; // 0 : 1루 1 : 2루 2: 3루
 	int ep = 1, out = 0;
 	for (int i = 0; i < N; i++) {
-		memset(pos, 0, sizeof(pos));
-		while (1) {
-			int now = RES[i][ord[ep]];
-			switch (now)
+		while(1) {
+			switch (RES[i][ord[ep]])
 			{
 			case 1:
 				score += pos[2];
@@ -72,6 +75,7 @@ void game() {
 			if (ep > 9) ep = 1;
 			if (out == 3) {
 				out = 0;
+				memset(pos, 0, sizeof(pos));
 				break;
 			}
 		}
@@ -81,11 +85,13 @@ void game() {
 }
 
 void dfs(int now) {
+	// 기저조건 -> 9번 타자까지 순서가 정해지면 종료 
+	// -> 그래서 now가 10일때
 	if (now >= 10) {
 		game();
 		return;
 	}
-
+	// 재귀 구성 -> 1~9번 타자를 고른다
 	for (int i = 1; i <= 9; i++) {
 		if (used[i])
 			continue;
@@ -100,7 +106,7 @@ void dfs(int now) {
 void solve() {
 	// 4번 타자는 이미 골랐다
 	used[4] = 1;
-	// 4번 타자는 1번 
+	// 4번 타자는 1
 	ord[4] = 1;
 	dfs(2);
 	printf("%d\n", ans);
