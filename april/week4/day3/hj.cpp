@@ -29,7 +29,7 @@ int calcScore() {
 	int outCount = 0;
 	int idx = 1;
 	int score = 0;
-	int base[4] = { 0 };
+	int base[3] = { 0 };
 	for (int i = 0; i < N; i++) {
 		memset(base, 0, sizeof(base));
 		for (outCount = 0; outCount < 3; idx++) {
@@ -40,16 +40,25 @@ int calcScore() {
 				outCount++;
 				continue;
 			}
-			else if (now < 3) {
-				rotate(base);
-				base[0] = now;
-				for (int d = 1; d < now; d++) {
-					if (base[3] > 0) {
-						base[3] = 0;
-						score++;
-					}
-					rotate(base);
-				}
+			else if (now == 1) {
+				score += (int)((bool)base[2]);
+				base[2] = base[1];
+				base[1] = base[0];
+				base[0] = path[idx];
+			}
+			else if (now == 2) {
+				score += (int)((bool)base[2]);
+				score += (int)((bool)base[1]);
+				base[2] = base[0];
+				base[1] = path[idx];
+				base[0] = 0;
+			}
+			else if (now == 3) {
+				score += (int)((bool)base[2]);
+				score += (int)((bool)base[1]);
+				score += (int)((bool)base[0]);
+				memset(base, 0, sizeof(base));
+				base[2] = path[idx];
 			}
 			else {
 				for (int d = 0; d < 3; d++) {
@@ -60,10 +69,6 @@ int calcScore() {
 				}
 				score++;
 			}
-			if (base[3] > 0) {
-				base[3] = 0;
-				score++;
-			}
 		}
 	}
 	return score;
@@ -71,37 +76,36 @@ int calcScore() {
 
 void dfs(int level) {
 	if (level == 10) {
-		if (path[2] == 1 && path[3] == 5 && path[4] == 6 && path[5] == 7)
-			int de = 1;
 		int score = calcScore();
 		if (maxScore < score) {
 			maxScore = score;
-			for (int i = 1; i < level; i++) {
-				printf("%d ", path[i]);
-			}
-			printf("\n\n");
 		}
 		return;
 	}
-	for (int i = 1; i <= 9; i++) {
-		if (visited[i])
-			continue;
-		visited[i] = 1;
-		path[level] = i;
+	if (level == 4) {
 		dfs(level + 1);
-		path[level] = 0;
-		visited[i] = 0;
+	}
+	else {
+		for (int i = 1; i <= 9; i++) {
+			if (visited[i])
+				continue;
+			visited[i] = 1;
+			path[level] = i;
+			dfs(level + 1);
+			path[level] = 0;
+			visited[i] = 0;
+		}
 	}
 }
 
 void solution() {
-	dfs(2);
+	dfs(1);
 }
 
 int main() {
 	input();
-	path[1] = 4;
-	visited[4] = 1;
+	path[4] = 1;
+	visited[1] = 1;
 	solution();
 	printf("%d\n", maxScore);
 	return 0;
