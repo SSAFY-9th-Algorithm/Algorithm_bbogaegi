@@ -43,7 +43,9 @@ void solve() {
 		cout << "0\n";
 	else {
 		int idx = 0;
+		int ed = 1 << H;
 		for (int t = H+1; t <= R; t++) {
+			idx %= ed;
 			int now = ord[H][idx++];
 			if (task[now].empty())
 				break;
