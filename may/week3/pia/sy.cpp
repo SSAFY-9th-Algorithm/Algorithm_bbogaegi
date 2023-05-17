@@ -2,6 +2,7 @@
 #define fastIO ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 #include <iostream>
 #include <vector>
+#include <cstring>
 using namespace std;
 
 /*
@@ -15,14 +16,11 @@ using namespace std;
 struct Info {
     int efi;
     char color;
-
-    Info(int el, int cl) {
-        efi = el, color = cl;
-    }
 };
 
 int N;
-vector<vector<Info>> MAP(5, vector<Info>(5, Info(0, 'W')));
+Info MAP[5][5];
+Info COPY[5][5];
 int efficacy[10][4][4][4]; // [n][y][x][dir]
 char element[10][4][4][4]; // [n][y][x][dir]
 int visited[10];
@@ -54,7 +52,7 @@ void rotate(int t, int d) {
     }
 }
 
-int getScore(vector<vector<Info>>& mat) {
+int getScore(Info mat[5][5]) {
     int R = 0, G = 0, B = 0, Y = 0;
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
@@ -73,37 +71,27 @@ int getScore(vector<vector<Info>>& mat) {
     return 7 * R + 5 * B + 3 * G + 2 * Y;
 }
 
-void cpy(vector<vector<Info>>& COPY, vector<vector<Info>>& mat) {
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            COPY[i][j].efi = mat[i][j].efi;
-            COPY[i][j].color = mat[i][j].color;
-        }
-    }
-}
-
-vector<vector<Info>> fillMap(vector<vector<Info>>& mat, int y, int x, int t, int d) {
-    vector<vector<Info>> tmp(5, vector<Info>(5, Info(0, 'W')));
-    cpy(tmp, mat);
+void fillMap(Info mat[5][5], int y, int x, int t, int d) {
+    
+    memcpy(COPY, mat, sizeof(COPY));
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             int val = mat[i + y][j + x].efi + efficacy[t][i][j][d];
 
             if (val < 0)
-                tmp[i + y][j + x].efi = 0;
+                COPY[i + y][j + x].efi = 0;
             else if (val > 9)
-                tmp[i + y][j + x].efi = 9;
-            else tmp[i + y][j + x].efi = val;
+                COPY[i + y][j + x].efi = 9;
+            else COPY[i + y][j + x].efi = val;
             char cl = element[t][i][j][d];
             if (cl != 'W') {
-                tmp[i + y][j + x].color = cl;
+                COPY[i + y][j + x].color = cl;
             }
         }
     }
-    return tmp;
 }
 
-void dfs(vector<vector<Info>>& mat, int cnt) {
+void dfs(Info mat[5][5], int cnt) {
     if (cnt == 3) {
         int score = getScore(mat);
         if (score > ans) ans = score;
@@ -118,13 +106,23 @@ void dfs(vector<vector<Info>>& mat, int cnt) {
         for (int y = 0; y < 2; y++) {
             for (int x = 0; x < 2; x++) {
                 for (int d = 0; d < 4; d++) {
-                    vector<vector<Info>> tmp = fillMap(mat, y, x, i, d);
-
+                    fillMap(mat, y, x, i, d);
+                    Info tmp[5][5] = { 0, };
+                    memcpy(tmp, COPY, sizeof(COPY));
                     dfs(tmp, cnt + 1);
                 }
             }
         }
         visited[i] = 0;
+    }
+}
+
+void init() {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            MAP[i][j].efi = 0;
+            MAP[i][j].color = 'W';
+        }
     }
 }
 
@@ -134,6 +132,7 @@ void solve() {
             rotate(i, d);
         }
     }
+    init();
     dfs(MAP, 0);
     cout << ans << '\n';
 }
